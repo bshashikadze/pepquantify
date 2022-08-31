@@ -3,16 +3,16 @@
 #' @param data this is the data that is returned from the preppetide function
 #' @param downshift see the Perseus documentation "Replace missing values from normal distribution"
 #' @param width     see the Perseus documentation "Replace missing values from normal distribution"
-#' @param n_ko_like minimum number of peptides that should have missing and valid value behaviour (max in one less than 2 in second or otherwise by user defined criteria) default 2
+#' @param n_ko_like minimum number of peptides that should have missing and valid value pattern (all valid in one condition, less than 2 in the second or otherwise by user defined criteria) default 2
 #' @param fraction_valid between 0-1. 1 means that imputed peptides are taken into account if they are present in all samples of one of the conditions, 0.5 means if they are present in the half of the samples of one of the conditions. default 1
 #' @param second_condition maximum acceptable number of valid values in other condition when fraction valid is met in the other, default 1
 #' @param seed set seed as values for imputation are derived randomly, seed makes sure the reproducibility. default 1234
-#' @description by default MS-EmpiRe does not require imputation, but requires at least two valid values in each condition
-#'    in extreme cases it could be that peptide is consistently detected in one of the conditions but is not found in the second condition
-#'    such peptides might be interesting to futher explore or even visualize on the volcano plot. however generated p-values and fold-changes must be taken into
-#'    account with caution. This function tries to take those imputed peptides for quantification that are chosed very stringend criterias. If protein already have
-#'    peptides more than min_pep (see the preppetide function), in this case no imputation will be performed even if there are peptides for this protein that meets imputation criteria.
-#'    For the criterias see the options of this function
+#' @description By default MS-EmpiRe does not require imputation, but requires at least two valid values in each condition.
+#'    In extreme cases it could be that the peptide is consistently detected in one of the conditions but is not found in the second condition,
+#'    such peptides might be interesting to futher explore or even visualize on the volcano plot. This function founds such peptides and imputes missing values. However after quantitative analysis generated p-values and fold-changes must be taken into
+#'    account with caution. This function tries to take those imputed peptides for quantification that are chosen with very stringend criterias. Additionally, if protein already have
+#'    peptides more than min_pep (see the preppetide function), no imputation will be performed even if there are peptides for this protein that meet imputation criteria.
+#'    For the criterias see the options of this function.
 #' @import utils dplyr tibble tidyr
 #' @importFrom stats sd median rnorm
 #' @importFrom magrittr %>%
@@ -105,6 +105,8 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
     dplyr::filter(.data$n_pep >= data[[6]]) %>%
     ungroup()
 
+
+
   # detect peptides in imputed matrix that can anyway be quantified by msempire so are not necessary to include
   imputed_matrix <- imputed_matrix %>%
     dplyr::filter(!id %in% peptides_for_msempire_min_2_pep$id)
@@ -116,6 +118,7 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
   }
 
   else {cat(" no peptides have met to the imputation criteria. you can relax the parameters or continue without the imputation ")}
+
 
   # add imputed peptides (if any)
     peptides_for_msempire <- data[[3]] %>%

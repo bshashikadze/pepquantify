@@ -1,11 +1,11 @@
 #' Read and filter the DDA quantification data produced by the MaxQuant
-#' @description This functions expects that the directory contains proteinGroups.txt and peptides.txt produced by MaxQuant without any post-analysis modification.
+#' @description This functions expects that the directory contains proteinGroups.txt and peptides.txt produced by the MaxQuant without any post-analysis modification.
 #'     Potential contaminants, reverse and only identified by site will be removed.
 #'     Additionally, conditions file will be written in the directory which should be modified based on experimental conditions.
 #'     Note that first you need to copy the conditions.txt file and rename as conditions_modified.txt and change only the second column. do not attempt to rename column names.
-#' @param exclude_samples if not empty excludes specified sample/s from further analysis (only if necessary e.g. after inspecting PCA
-#' @param lfq if non-labelled data is loaded, lfq must be set to true if labelling was performed (e.g. TMT) lfq should be set to false
-#' @return The list of three elements, the first is the filtered peptides file the second is the filtered protein groups file and the last is the character that stores the type of experiment
+#' @param exclude_samples if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
+#' @param lfq if non-labelled data is loaded, lfq must be set to true if labelling was performed (e.g. TMT) lfq should be set to false. For TMT Reporter.intensity.corrected is taken for quantification
+#' @return The list of three elements, the first is the filtered peptides file, the second is the filtered protein groups file and the last is the character that stores the type of experiment
 #' @export
 #' @import dplyr utils stringr
 #' @importFrom magrittr %>%

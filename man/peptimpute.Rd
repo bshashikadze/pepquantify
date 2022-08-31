@@ -21,7 +21,7 @@ peptimpute(
 
 \item{width}{see the Perseus documentation "Replace missing values from normal distribution"}
 
-\item{n_ko_like}{minimum number of peptides that should have missing and valid value behaviour (max in one less than 2 in second or otherwise by user defined criteria) default 2}
+\item{n_ko_like}{minimum number of peptides that should have missing and valid value pattern (all valid in one condition, less than 2 in the second or otherwise by user defined criteria) default 2}
 
 \item{fraction_valid}{between 0-1. 1 means that imputed peptides are taken into account if they are present in all samples of one of the conditions, 0.5 means if they are present in the half of the samples of one of the conditions. default 1}
 
@@ -30,12 +30,12 @@ peptimpute(
 \item{seed}{set seed as values for imputation are derived randomly, seed makes sure the reproducibility. default 1234}
 }
 \description{
-by default MS-EmpiRe does not require imputation, but requires at least two valid values in each condition
-in extreme cases it could be that peptide is consistently detected in one of the conditions but is not found in the second condition
-such peptides might be interesting to futher explore or even visualize on the volcano plot. however generated p-values and fold-changes must be taken into
-account with caution. This function tries to take those imputed peptides for quantification that are chosed very stringend criterias. If protein already have
-peptides more than min_pep (see the preppetide function), in this case no imputation will be performed even if there are peptides for this protein that meets imputation criteria.
-For the criterias see the options of this function
+By default MS-EmpiRe does not require imputation, but requires at least two valid values in each condition.
+In extreme cases it could be that the peptide is consistently detected in one of the conditions but is not found in the second condition,
+such peptides might be interesting to futher explore or even visualize on the volcano plot. This function founds such peptides and imputes missing values. However after quantitative analysis generated p-values and fold-changes must be taken into
+account with caution. This function tries to take those imputed peptides for quantification that are chosen with very stringend criterias. Additionally, if protein already have
+peptides more than min_pep (see the preppetide function), no imputation will be performed even if there are peptides for this protein that meet imputation criteria.
+For the criterias see the options of this function.
 }
 \examples{
 peptimpute(data)

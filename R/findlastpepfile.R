@@ -1,6 +1,6 @@
-#' returns the location of the most recent peptides and modified conditions file
+#' Returns the location of the most recent peptides and modified conditions file
 #'
-#' @return last folder
+#' @return path for the last folder, peptides file and conditions file
 #' @export
 #' @import dplyr
 #' @importFrom magrittr %>%
@@ -22,5 +22,7 @@ findlastpepfile <- function() {
   locations_last[[1]] <- paste0(last_folder, "/peptidesformsempire.txt")
   locations_last[[2]] <- paste0(last_folder, "/conditions_dual.txt")
   locations_last[[3]] <- last_folder
+
+  # return path
   return(locations_last)
 }

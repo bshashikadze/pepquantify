@@ -2,15 +2,15 @@
 % Please edit documentation in R/findlastpepfile.R
 \name{findlastpepfile}
 \alias{findlastpepfile}
-\title{returns the location of the most recent peptides and modified conditions file}
+\title{Returns the location of the most recent peptides and modified conditions file}
 \usage{
 findlastpepfile()
 }
 \value{
-last folder
+path for the last folder, peptides file and conditions file
 }
 \description{
-returns the location of the most recent peptides and modified conditions file
+Returns the location of the most recent peptides and modified conditions file
 }
 \examples{
 findlastpepfile()
