@@ -76,6 +76,8 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
 
   #replace P values having value of 1 with 0,99
   msempire_results_volcano$p_value[msempire_results_volcano$p_value == 1] <- 0.9999999
+
+
   #logarithmize p-value column for plotting as y axis in Volcano
   msempire_results_volcano$log10p=-log10(msempire_results_volcano$p_value)
   msempire_results_volcano$log10p[msempire_results_volcano$log10p == Inf] <- NA
