@@ -4,7 +4,7 @@
 #' @param data  path returned from the findlastpepfile (or pepquantify_funs (recommended))
 #' @param data2 this is the output of the pepquantify package read functions
 #' @export
-#' @import utils dplyr stringr
+#' @import utils dplyr stringr tidyr
 #' @importFrom magrittr %>%
 #' @examples resultstidy(fc_threshold = 1.5, data)
 resultstidy <- function(fc_threshold = 1.5, data, data2) {
@@ -14,13 +14,13 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   conditions <- read.delim(data[[2]], sep = "\t", header = T)
 
   # which conditions are there
-  c_1 <- conditions %>% select(.data$Condition) %>% filter(str_detect(.data$Condition, "A_")) %>%
-    dplyr::filter(row_number()==1)  %>%
+  c_1 <- conditions %>% dplyr::select(.data$Condition) %>% dplyr::filter(stringr::str_detect(.data$Condition, "A_")) %>%
+    dplyr::filter(dplyr::row_number()==1)  %>%
     as.character() %>%
     stringr::str_remove("A_")
-  c_2 <- conditions %>% select(.data$Condition) %>%
-    dplyr::filter(str_detect(.data$Condition, "B_")) %>%
-    filter(row_number() == 1) %>%
+  c_2 <- conditions %>% dplyr::select(.data$Condition) %>%
+    dplyr::filter(stringr::str_detect(.data$Condition, "B_")) %>%
+    dplyr::filter(dplyr::row_number() == 1) %>%
     as.character() %>%
     stringr::str_remove("B_")
 
@@ -37,27 +37,47 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
       adj_p_value        = .data$p.adj) %>%
     dplyr::mutate(l2fc = -1*.data$l2fc) %>%
     dplyr::mutate(
-      significant = case_when(
+      significant = dplyr::case_when(
         .data$adj_p_value < 0.05 & abs(.data$l2fc) > log2(fc_threshold) ~ "+"),
-      diff_abundant = case_when(
+      diff_abundant = dplyr::case_when(
         .data$adj_p_value < 0.05 & .data$l2fc >  log2(fc_threshold) ~ paste0("upregulated_in_",    c_1),
         .data$adj_p_value < 0.05 & .data$l2fc < -log2(fc_threshold) ~ paste0("downregulated_in_", c_1),
         TRUE ~ "n.s."
       )) %>%
-    arrange(.data$significant, desc(.data$l2fc))
+    dplyr::arrange(.data$significant, dplyr::desc(.data$l2fc))
 
 
   # adds numbers of total and imputed peptides
   peptnumbers <- read.delim(data[[1]], sep = "\t", header = T) %>%
    dplyr::select(-starts_with("Intensity.")) %>%
-   dplyr::mutate(id=str_remove(.data$unique_id, "\\.[0-9]*$")) %>%
+   dplyr::mutate(id = stringr::str_remove(.data$unique_id, "\\.[0-9]*$")) %>%
    dplyr::select(-.data$unique_id) %>%
-   dplyr::rename(accession = .data$id) %>%
-   dplyr::mutate_all(~replace(., is.na(.), 0)) %>% dplyr::distinct(.data$accession, .keep_all = TRUE)
+   dplyr::rename(accession = .data$id)
+
+
+
+  # number of peptides for which the data was imputed
+  n_missingpeptide <- peptnumbers %>%
+    dplyr::select(.data$accession, .data$n_ko) %>%
+    tidyr::drop_na() %>%
+    dplyr::rename(n_imputed = .data$n_ko) %>%
+    dplyr::distinct()
+
+
+
+  # number of peptides with a valid values
+  n_validpeptide <- peptnumbers %>%
+    dplyr::select(.data$accession, .data$n_pep) %>%
+    dplyr::rename(n_pep_total = .data$n_pep) %>%
+    dplyr::distinct()
+
 
   # add previous information
   msempire_results <- msempire_results %>%
-    dplyr::left_join(peptnumbers)
+    dplyr::left_join(n_validpeptide) %>%
+    dplyr::left_join(n_missingpeptide) %>%
+    dplyr::mutate(n_imputed = tidyr::replace_na(.data$n_imputed, 0)) %>%
+    dplyr::mutate(significant = tidyr::replace_na(.data$significant, "n.s."))
 
 
   # gets extra information from the protein groups files (different for dda and dia)
@@ -71,18 +91,18 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   # save the results that can be used to plot the volcano plot
   msempire_results_volcano <- msempire_results %>%
     dplyr::select(1:6) %>%
-    dplyr::mutate_all(~na_if(., 0))
+    dplyr::mutate_all(~dplyr::na_if(., 0))
+
+
 
   #replace P values having value of 1 with with the highest value which is not 1 (this is to properly logarithmize)
-  msempire_results_volcano$p_value[msempire_results_volcano$p_value == 1] <- NA
-  msempire_results_volcano$p_value[is.na(msempire_results_volcano$p_value)] <- max(msempire_results_volcano$p_value, na.rm = T)
-
-
   # logarithmize p-value column for plotting as y axis on Volcano
   msempire_results_volcano$log10p=-log10(msempire_results_volcano$p_value)
-  msempire_results_volcano$log10p[msempire_results_volcano$log10p == Inf] <- NA
   msempire_results_volcano$log10p[is.na(msempire_results_volcano$log10p)] <- max(msempire_results_volcano$log10p, na.rm = T)
+  msempire_results_volcano$log10p[msempire_results_volcano$log10p == 0] <- NA
+  msempire_results_volcano$log10p[is.na(msempire_results_volcano$log10p)] <-  min(msempire_results_volcano$log10p, na.rm = T)
   write.table(msempire_results_volcano, paste0(data[[3]], "/msempire_results_tidy_volcano.txt"), sep = "\t", row.names = F)
+
 
   # print the information
 cat("three files were saved in the working directory:

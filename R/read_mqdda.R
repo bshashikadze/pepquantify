@@ -95,7 +95,7 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
   filtered_data      <- list()
   filtered_data[[1]] <- data_peptide
   filtered_data[[2]] <- data_pg
-
+  filtered_data[[3]] <- "DDA"
 
 
   # return the filtered peptides and protein groups as well as the information about the type of experiment

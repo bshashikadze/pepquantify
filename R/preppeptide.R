@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples preppeptide(data, condition1, condition2)
-preppeptide <- function(data, n_element_peptide = 1, condition1 = "P", condition2 = "wt", n_condition_1 = 3, n_condition_2 = 3, min_pep = 2) {
+preppeptide <- function(data, n_element_peptide = 1, condition1, condition2, n_condition_1 = 3, n_condition_2 = 3, min_pep = 2) {
 
 
 
@@ -45,7 +45,7 @@ preppeptide <- function(data, n_element_peptide = 1, condition1 = "P", condition
   # choose the peptide data (this will be crucial if only peptides data will be read without protein groups file)
   if (length(data) >= 2) {
 
-    data <- data[[n_element_peptide]]
+      data <- data[[n_element_peptide]]
 
   }
   else {data <- data}
@@ -86,9 +86,9 @@ preppeptide <- function(data, n_element_peptide = 1, condition1 = "P", condition
 
   # filter for one peptide and save (this data will be used if imputation will not be performed)
   data_dual_valid_save <- data_dual_valid %>%
-    group_by(.data$id) %>%
-    mutate(n_pep = n()) %>%
-    ungroup() %>%
+    dplyr::group_by(.data$id) %>%
+    dplyr::mutate(n_pep = dplyr::n()) %>%
+    dplyr::ungroup() %>%
     dplyr::filter(.data$n_pep >= min_pep) %>%
     dplyr::select(-.data$id)
 
@@ -104,7 +104,7 @@ preppeptide <- function(data, n_element_peptide = 1, condition1 = "P", condition
     tidyr::pivot_wider(names_from = "Bioreplicate", values_from = "Intensity", c(.data$id, .data$unique_id)) %>%
     dplyr::select(starts_with("Intensity."), .data$unique_id) %>%
     tibble::column_to_rownames("unique_id") %>%
-    dplyr::mutate_all(~na_if(., 0)) %>%
+    dplyr::mutate_all(~dplyr::na_if(., 0)) %>%
     dplyr::mutate_all(., log2)
 
 

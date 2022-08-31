@@ -92,18 +92,18 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
     dplyr::select(.data$id, .data$unique_id, starts_with("Intensity.")) %>%
     dplyr::mutate_if(is.numeric, ~2^(.)) %>%
     dplyr::group_by(.data$id) %>%
-    dplyr::mutate(n_ko = n()) %>%
+    dplyr::mutate(n_ko = dplyr::n()) %>%
     dplyr::filter(.data$n_ko >= n_ko_like) %>%
-    ungroup()
+    dplyr::ungroup()
 
 
 
   # this is unimputed matrix which contains potentially msempire quantifiable peptides
   peptides_for_msempire_min_2_pep <- data[[3]] %>%
     dplyr::group_by(.data$id) %>%
-    dplyr::mutate(n_pep = n()) %>%
+    dplyr::mutate(n_pep = dplyr::n()) %>%
     dplyr::filter(.data$n_pep >= data[[6]]) %>%
-    ungroup()
+    dplyr::ungroup()
 
 
 
@@ -124,7 +124,7 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
     peptides_for_msempire <- data[[3]] %>%
       dplyr::bind_rows(imputed_matrix) %>%
       dplyr::group_by(.data$id) %>%
-      dplyr::mutate(n_pep = n()) %>%
+      dplyr::mutate(n_pep = dplyr::n()) %>%
       dplyr::filter(.data$n_pep >= data[[6]]) %>%
       dplyr::ungroup() %>%
       dplyr::select(-.data$id) %>%
