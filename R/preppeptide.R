@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples preppeptide(data, condition1, condition2)
-preppeptide <- function(data, n_element_peptide = 1, condition1, condition2, n_condition_1 = 3, n_condition_2 = 3, min_pep = 2) {
+preppeptide <- function(data, n_element_peptide = 1, condition1 = "DMD_Old", condition2 = "DMD_Young", n_condition_1 = 3, n_condition_2 = 3, min_pep = 2) {
 
 
 
@@ -37,9 +37,21 @@ preppeptide <- function(data, n_element_peptide = 1, condition1, condition2, n_c
   else{cat(" conditions_modified.txt file does not exist ")}
 
 
+  # delete folder if you typed incorrect conditions
+  if (!condition1 %in% conditions[,2] & !condition2 %in% conditions[,2]) {
+    unlink(paste0(condition1, "_vs_", condition2), recursive = T)
+  }
+
+
   # was conditions files modified?
   stopifnot("the second column in the experimental conditions file seems not modified!" = length(unique(conditions$Condition)) !=
               length(conditions$Bioreplicate))
+
+
+  # check if there are right columns
+  stopifnot("in the conditions file column names MUST remain unchanged,
+            that is Bioreplicate and Condition (case sensitive)" = names(conditions)[1] == "Bioreplicate" & names(conditions)[2] == "Condition")
+
 
 
   # choose the peptide data (this will be crucial if only peptides data will be read without protein groups file)
@@ -67,6 +79,7 @@ preppeptide <- function(data, n_element_peptide = 1, condition1, condition2, n_c
     dplyr::summarise(n_cond = sum(.data$Intensity > 0, na.rm = TRUE)) %>%
     dplyr::ungroup() %>%
     tidyr::pivot_wider(names_from = "Condition", values_from = "n_cond", c(.data$unique_id, .data$id))
+
 
 
 
@@ -112,7 +125,20 @@ preppeptide <- function(data, n_element_peptide = 1, condition1, condition2, n_c
   # write the conditions file in a designated folder. this conditions will only contain comparisons of interest and will lately be
   # used for the msempire analysis. Letters "A" and "B" are inserted before each condition to freeze the order: important for fold-change direction
   conditions_dual <- conditions %>%
-    dplyr::filter(.data$Condition == condition1 | .data$Condition == condition2) %>%
+    dplyr::filter(.data$Condition == condition1 | .data$Condition == condition2)
+
+
+
+  # check if n_condition_1 and n_condition_2 is not more than actual sample numbers in conditions
+  n_c1 <- length(conditions_dual$Condition[conditions_dual$Condition == condition1])
+  n_c2 <- length(conditions_dual$Condition[conditions_dual$Condition == condition2])
+
+  stopifnot("n_condition_1 and/or n_condition_2 is less than number of samples in first and/or second condition,
+            default for the both is 3" = n_condition_1 <= n_c1 | n_condition_2 <= n_c2)
+
+
+  # write conditions file (which contains dual comparisons)
+  conditions_dual <- conditions_dual %>%
     dplyr::mutate(Condition = case_when(.data$Condition == condition1 ~ paste0("A_", condition1),
                                         TRUE ~ paste0("B_", condition2))) %>%
     write.table(paste0(condition1, "_vs_", condition2, "/conditions_dual.txt"), sep = "\t", row.names = F)
