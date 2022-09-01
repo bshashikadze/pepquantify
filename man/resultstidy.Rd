@@ -7,7 +7,7 @@
 resultstidy(fc_threshold = 1.5, data, data2)
 }
 \arguments{
-\item{fc_threshold}{minimum fold change for the protein to be considered differentially abundant (in natural scale) defualt 1.5}
+\item{fc_threshold}{minimum fold change for the protein to be considered differentially abundant (in natural scale) default 1.5}
 
 \item{data}{path returned from the findlastpepfile (or pepquantify_funs (recommended))}
 
