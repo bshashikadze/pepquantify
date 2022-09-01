@@ -23,9 +23,14 @@ You can install the development version of pepquantify from
 devtools::install_github("bshashikadze/pepquantify")
 ```
 
+Additionally you will need an MS-EmpiRe installed to perform quantification
+https://github.com/zimmerlab/MS-EmpiRe 
+
 ## Example script
 
 This is a basic example:
+1. set the working directory to the folder which contains proteomics dataset
+Important: pepquantify read functions expect that your working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis (to come soon)
 
 ### load the libraries
 
@@ -34,7 +39,6 @@ library(pepquantify)
 library(msEmpiRe)
 ```
 
-Important: pepquantify read functions expect that your working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis (to come soon)
 
 ### define the function that performs data loading, normalization and quantification (MS-EmpiRe)
 <details>
@@ -43,7 +47,7 @@ see: <https://github.com/zimmerlab/MS-EmpiRe> note1: this function
 consists with codes which can be found in -
 <https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R> note2:
 that this is only an example code and for more information you should
-refer to the documentation of an MS-EmpiRe package.
+refer to the documentation of an MS-EmpiRe package. 
 </details>
 
 
