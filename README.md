@@ -73,26 +73,11 @@ description by ?read_mqdda
 
 ``` r
 data_raw <- pepquantify::read_mqdda()
-#> conditions file was generated. First rename file as: conditions_modified.txt. afterwards,
-#>          modify ONLY the second column according to the experimental conditions. Do not change the column headers
 ```
 
 ### prepare the dataset and perform quantification
 
 ``` r
-msempire_data <- pepquantify_funs(data_raw, condition1 = "MIR", condition2 = "WT", imputation = TRUE)
-#>  there are 125 peptides with the missing values imputed, they will be included in the quantification
+msempire_data <- pepquantify_funs(data_raw, condition1 = "name_of_condition_one", condition2 = "name_of_condition_two", imputation = TRUE)
 msempire_calculation(msempire_data, fc_threshold = 1.5)
-#> [1] "final error: 0.664385"
-#> [1] "final error: 0.602906"
-#> [1] 0.6643852
-#> [1] 0.6029063
-#> [1] "detecting mode"
-#> [1] "mode: -0.3"
-#> [1] "Final error: 0.680987"
-#> [1] "numeric" "numeric" "numeric" "numeric" "numeric" "numeric"
-#> three files were saved in the working directory:
-#>     1 - msempire_results_raw:     this is the raw results of MS-EmpiRe
-#>     2 - msempire_results_tidy:    this is the results that has been cleaned-up and can be used for suppl tables
-#>     3 - msempire_results_volcano: some columns was adjusted to make it suitable for the volcano plot
 ```
