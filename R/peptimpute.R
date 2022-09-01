@@ -20,7 +20,7 @@
 #'
 #' @examples peptimpute(data)
 peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fraction_valid = 1,
-                       second_condition =1, seed = 1234) {
+                       second_condition = 1, seed = 1234) {
 
 
   # get the statistics measured from the valid data. this will be used to build a random distribution from which the values will be
@@ -46,7 +46,7 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
 
     set.seed(seed = seed)
     random_data[[i]] <- rnorm(n = valid_data_descriptives$n_missing[i],
-                              mean = valid_data_descriptives$mean_valid[i] - (downshift * valid_data_descriptives$sd_valid[i]),
+                              mean = valid_data_descriptives$median_valid[i] - (downshift * valid_data_descriptives$sd_valid[i]),
                               sd = valid_data_descriptives$sd_valid[i]   * width)
 
     # impute the missing values

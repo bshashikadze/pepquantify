@@ -61,8 +61,6 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
    dplyr::rename(accession = .data$id)
 
 
-
-
   # number of peptides for which the data was imputed (check first if they are present)
   if (ncol(peptnumbers) == 3) {
 
