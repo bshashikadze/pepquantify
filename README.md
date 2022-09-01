@@ -71,6 +71,14 @@ conditions file will be generated which you should modify according to
 experimental conditions for more information please read the function
 description by ?read_mqdda
 
+Arguments:
+exclude_samples
+if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
+
+lfq	
+if non-labelled data is loaded, lfq must be set to true if labelling was performed (e.g. TMT) lfq should be set to false. For TMT Reporter.intensity.corrected is taken for quantification
+
+
 ``` r
 data_raw <- pepquantify::read_mqdda()
 ```
