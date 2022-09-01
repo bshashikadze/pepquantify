@@ -37,8 +37,9 @@ preppeptide <- function(data, n_element_peptide = 1, condition1 = "DMD_Old", con
   else{cat(" conditions_modified.txt file does not exist ")}
 
 
+
   # delete folder if you typed incorrect conditions
-  if (!condition1 %in% conditions[,2] & !condition2 %in% conditions[,2]) {
+  if (!condition1 %in% conditions[,2] | !condition2 %in% conditions[,2]) {
     unlink(paste0(condition1, "_vs_", condition2), recursive = T)
   }
 
