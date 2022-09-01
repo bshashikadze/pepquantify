@@ -64,7 +64,8 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
 
 
   # number of peptides for which the data was imputed (check first if they are present)
-  if (ncol(peptnumbers) - (nrow(conditions) + 2) >= 2) {
+  if (ncol(peptnumbers) == 3) {
+
     n_missingpeptide <- peptnumbers %>%
       dplyr::select(.data$accession, .data$n_ko) %>%
       tidyr::drop_na() %>%
