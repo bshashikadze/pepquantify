@@ -44,11 +44,13 @@ library(msEmpiRe)
 ### define the function that performs data loading, normalization and quantification (MS-EmpiRe)
 <details>
 <summary>info</summary>
-see: <https://github.com/zimmerlab/MS-EmpiRe> note1: this function
+
+see: https://github.com/zimmerlab/MS-EmpiRe note1: this function
 consists with codes which can be found in -
-<https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R> note2:
+https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R note2:
 that this is only an example code and for more information you should
 refer to the documentation of an MS-EmpiRe package. 
+
 </details>
 
 
