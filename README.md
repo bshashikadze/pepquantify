@@ -84,6 +84,7 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
 ```
 
 ### read the data
+*data should be loaded once and the functions below can be executed as many times as many dual comparisons there are: e.g. cond1 vs cond2, cond1 vs cond3 and etc.*
 
 conditions file will be generated which you should modify according to
 experimental conditions. For more information please refer to the function
@@ -155,8 +156,18 @@ minimum fold change for the protein to be considered differentially abundant (in
 
 </details>
   
-    
+*Two function below should be run as many times as many comparisons there are, it will generated specific folder for each comparison, e.g. if condition1 = "disease" and condition2 = "healty", the folder will be generated automatically named as disease_vs_healthy. If you have other group e.g. treated, you just copy paste the following two lines and run with e.g. condition1 = "disease", condition2 = "treated" and the folder will be generated named as disease_vs_treated. Also, order matters for the fold-change direction, positive l2fc will be the ones increased in condition1.*
+
+ 
 ``` r
-msempire_data <- pepquantify_funs(data_raw, condition1 = "name_of_condition_one", condition2 = "name_of_condition_two")
+msempire_data <- pepquantify::pepquantify_funs(data_raw, condition1 = "name_of_condition_one", condition2 = "name_of_condition_two")
 msempire_calculation(msempire_data, fc_threshold = 1.5)
-```
+```  
+  
+<details>
+<summary>Output</summary>
+* msempire_results_raw:     this is the raw results of MS-EmpiRe
+* msempire_results_tidy:    this is the results that has been cleaned-up and can be used for suppl tables
+* msempire_results_volcano: some columns was adjusted to make it suitable for the volcano plot  
+</details>  
+  
