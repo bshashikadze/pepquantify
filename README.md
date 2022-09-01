@@ -166,8 +166,15 @@ msempire_calculation(msempire_data, fc_threshold = 1.5)
   
 <details>
 <summary>Output</summary>
-* msempire_results_raw:     this is the raw results of MS-EmpiRe
-* msempire_results_tidy:    this is the results that has been cleaned-up and can be used for suppl tables
-* msempire_results_volcano: some columns was adjusted to make it suitable for the volcano plot  
+
+* msempire_results_raw:     
+this is the raw results of MS-EmpiRe
+
+* msempire_results_tidy:    
+this is the results that has been cleaned-up and can be used for suppl tables
+
+* msempire_results_volcano: 
+some columns was adjusted to make it suitable for the volcano plot  
+
 </details>  
   
