@@ -31,7 +31,7 @@ https://github.com/zimmerlab/MS-EmpiRe
 This is a basic example:
 1. set the working directory to the folder which contains proteomics dataset
 
-*pepquantify read functions expect that your working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis (to come soon). See also ?read_mqdda and read_diann
+*pepquantify read functions expect that your working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis (to come soon). See also ?read_mqdda and read_diann*
 
 ### load the libraries
 *Vast majority of pepquantify functions are written using tidyverse package collection, they will be imported automatically
