@@ -52,7 +52,7 @@ note1: this function consists with codes which can be found in -
 https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R 
 note2: this is only an example code and for more information you should
 refer to the documentation of an MS-EmpiRe package. 
-note3: in msEmpiRe::read.standard I usually use '\\.[0-9]*$' istead of '\\.'.
+note3: in msEmpiRe::read.standard I usually use <\\.[0-9]*$> istead of '\\.'.
 This is necessary to remove unique number at the end of the protein ids which are added by pepquantify read function.  
 "\\.[0-9]*$" this pattern removes everything after the last dot (.), while the "\\." removes after the 
 first dot, which is inconvinient in case of ncbi refseq protein database which has version numbers e.g. XP_123456.1
