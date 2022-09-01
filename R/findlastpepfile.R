@@ -11,7 +11,7 @@ findlastpepfile <- function() {
   mypath <- getwd()
   dir_info <- file.info(list.files(mypath, full.names = T)) %>%
     dplyr::filter(.data$isdir == "TRUE")
-  last_folder <- rownames(dir_info)[which.max(dir_info$ctime)]
+  last_folder <- rownames(dir_info)[which.max(dir_info$atime)]
 
   # peptides and the labels file from that folder
   peptides               <- paste0(last_folder, "/peptidesformsempire.txt")
