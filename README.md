@@ -34,7 +34,7 @@ This is a basic example:
 *pepquantify read functions expect that your working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis (to come soon). See also ?read_mqdda and read_diann*
 
 ### load the libraries
-*Vast majority of pepquantify functions are written using tidyverse package collection, they will be imported automatically
+*Vast majority of pepquantify functions are written using tidyverse package collection, they will be imported automatically*
 ``` r
 library(pepquantify)
 library(msEmpiRe)
@@ -99,7 +99,7 @@ if not empty, excludes specified sample/s from further analysis (only if necessa
 if non-labelled data is loaded, lfq must be set to true if labelling was performed (e.g. TMT) lfq should be set to false. For TMT Reporter.intensity.corrected is taken for quantification
 </details> 
 
-*Keep the name as "data_raw", if you change make sure you indicate it in the next function as well (see pepquantify_funs())
+*Keep the name as "data_raw", if you change make sure you indicate it in the next function as well (see pepquantify_funs())*
 ``` r
 data_raw <- pepquantify::read_mqdda()
 ```
