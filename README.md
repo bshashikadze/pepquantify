@@ -131,7 +131,8 @@ set seed as values for imputation are derived randomly, seed makes sure the repr
 
 fc_threshold:
 minimum fold change for the protein to be considered differentially abundant (in natural scale) default 1.5
-<details>
+
+  
 ``` r
 msempire_data <- pepquantify_funs(data_raw, condition1 = "name_of_condition_one", condition2 = "name_of_condition_two")
 msempire_calculation(msempire_data, fc_threshold = 1.5)
