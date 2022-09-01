@@ -42,6 +42,8 @@ library(msEmpiRe)
 
 
 ### define the function that performs data loading, normalization and quantification (MS-EmpiRe)
+You need to execute this function once only in each session to have it in a global environment  
+
 <details>
 <summary>info</summary>
 
@@ -61,13 +63,13 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
   
   # read the data in the expressionset format and perform msempire normalization and quantification  
     # (https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R)
-  msempire_data  <- msEmpiRe::read.standard(msempire_data[[1]],msempire_data[[2]],
+  msempiredata  <- msEmpiRe::read.standard(msempire_data[[1]], msempire_data[[2]],
                                             prot.id.generator = function(pep) unlist(strsplit(pep, "\\.[0-9]*$"))[1],
                                             signal_pattern="Intensity.*")
   
   # msempire calculations
   set.seed(seed = seed)
-  msempire_results <- msempire_data  %>%
+  msempire_results <- msempiredata  %>%
     msEmpiRe::normalize() %>%
     msEmpiRe::de.ana() %>%
     write.table(paste0(data[[3]], "/msempire_results_raw.txt"), sep = "\t", row.names = F)
