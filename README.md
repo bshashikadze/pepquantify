@@ -76,8 +76,8 @@ data_raw <- pepquantify::read_mqdda()
 ```
 
 ### prepare the dataset and perform quantification
-
+'imputation' true/false
 ``` r
-msempire_data <- pepquantify_funs(data_raw, condition1 = "name_of_condition_one", condition2 = "name_of_condition_two", imputation = TRUE)
+msempire_data <- pepquantify_funs(data_raw, condition1 = "name_of_condition_one", condition2 = "name_of_condition_two")
 msempire_calculation(msempire_data, fc_threshold = 1.5)
 ```
