@@ -13,7 +13,7 @@ for the further analysis with an ‘MS-EmpiRe’ package. Also,
 settings, to include peptides with the high detection rate in only one
 condition, but low in another, in the quantitative analysis.
 
-## Installation
+## How to install?
 
 You can install the development version of pepquantify from
 [GitHub](https://github.com/) with:
@@ -23,7 +23,7 @@ You can install the development version of pepquantify from
 devtools::install_github("bshashikadze/pepquantify")
 ```
 
-## Example
+## Example script
 
 This is a basic example:
 
@@ -34,13 +34,18 @@ library(pepquantify)
 library(msEmpiRe)
 ```
 
-### define the function that performs data loading, normalization and quantification (MS-EmpiRe)
+Important: pepquantify read functions expect that your working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis (to come soon)
 
+### define the function that performs data loading, normalization and quantification (MS-EmpiRe)
+<details>
+<summary>info</summary>
 see: <https://github.com/zimmerlab/MS-EmpiRe> note1: this function
 consists with codes which can be found in -
 <https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R> note2:
 that this is only an example code and for more information you should
 refer to the documentation of an MS-EmpiRe package.
+</details>
+
 
 ``` r
 msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold = 1.5) {
@@ -71,14 +76,15 @@ conditions file will be generated which you should modify according to
 experimental conditions for more information please read the function
 description by ?read_mqdda
 
-Arguments:
+<details>
+<summary>Arguments</summary>
 
-exclude_samples:
+* exclude_samples:
 if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
 
-lfq:
+* lfq:
 if non-labelled data is loaded, lfq must be set to true if labelling was performed (e.g. TMT) lfq should be set to false. For TMT Reporter.intensity.corrected is taken for quantification
-
+</details> 
 
 ``` r
 data_raw <- pepquantify::read_mqdda()
