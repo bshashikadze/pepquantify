@@ -6,12 +6,12 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-pepquantify Takes the peptide level output of the proteomics dataset and
+pepquantify takes the peptide level output of the proteomics dataset and
 proposes various options to pre-filter and clean up the data and prepare
-for the further analysis with an ‘MS-EmpiRe’ package. Also,
+for further analysis with an ‘MS-EmpiRe’ package. Also,
 ‘pepquantify’ can perform missing value imputation with user-defined
-settings, to include peptides with the high detection rate in only one
-condition, but low in another, in the quantitative analysis.
+settings, to include peptides with a high detection rate in only one
+condition, but very low in another, in the quantitative analysis.
 
 ## How to install?
 
@@ -23,7 +23,7 @@ You can install the development version of pepquantify from
 devtools::install_github("bshashikadze/pepquantify")
 ```
 
-Additionally you will need an MS-EmpiRe installed to perform quantification
+Additionally you will need an MS-EmpiRe installed to perform normalization & quantification
 https://github.com/zimmerlab/MS-EmpiRe 
 
 ## Example script
@@ -31,10 +31,10 @@ https://github.com/zimmerlab/MS-EmpiRe
 This is a basic example:
 1. set the working directory to the folder which contains proteomics dataset
 
-pepquantify read functions expect that your working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis (to come soon). See also ?read_mqdda
+*pepquantify read functions expect that your working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis (to come soon). See also ?read_mqdda and read_diann
 
 ### load the libraries
-
+*Vast majority of pepquantify functions are written using tidyverse package collection, they will be imported automatically
 ``` r
 library(pepquantify)
 library(msEmpiRe)
@@ -47,12 +47,15 @@ You need to execute this function once only in each session to have it in a glob
 <details>
 <summary>info</summary>
 
-see: https://github.com/zimmerlab/MS-EmpiRe note1: this function
-consists with codes which can be found in -
-https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R note2:
-that this is only an example code and for more information you should
+see: https://github.com/zimmerlab/MS-EmpiRe 
+note1: this function consists with codes which can be found in -
+https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R 
+note2: this is only an example code and for more information you should
 refer to the documentation of an MS-EmpiRe package. 
-
+note3: in msEmpiRe::read.standard I usually use "\\.[0-9]*$" istead of "\\.".
+This is necessary to remove unique number at the end of the protein ids which are added by pepquantify read function.  
+"\\.[0-9]*$" this pattern removes everything after the last dot (.), while the "\\." removes after the 
+first dot, which is inconvinient in case of ncbi refseq protein database which has version numbers e.g. XP_123456.1
 </details>
 
 
@@ -62,7 +65,8 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
   require(magrittr)
   
   # read the data in the expressionset format and perform msempire normalization and quantification  
-    # (https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R)
+  # (https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R)
+  
   msempiredata  <- msEmpiRe::read.standard(msempire_data[[1]], msempire_data[[2]],
                                             prot.id.generator = function(pep) unlist(strsplit(pep, "\\.[0-9]*$"))[1],
                                             signal_pattern="Intensity.*")
@@ -74,7 +78,7 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
     msEmpiRe::de.ana() %>%
     write.table(paste0(data[[3]], "/msempire_results_raw.txt"), sep = "\t", row.names = F)
   
-  # tidy results
+  # tidy results (pepquantify package)
   pepquantify::resultstidy(data, data2,  fc_threshold = fc_threshold)
 }
 ```
@@ -82,8 +86,8 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
 ### read the data
 
 conditions file will be generated which you should modify according to
-experimental conditions for more information please read the function
-description by ?read_mqdda
+experimental conditions. For more information please refer to the function
+description (type ?read_mqdda in the R console)
 
 <details>
 <summary>Arguments</summary>
@@ -95,6 +99,7 @@ if not empty, excludes specified sample/s from further analysis (only if necessa
 if non-labelled data is loaded, lfq must be set to true if labelling was performed (e.g. TMT) lfq should be set to false. For TMT Reporter.intensity.corrected is taken for quantification
 </details> 
 
+*Keep the name as "data_raw", if you change make sure you indicate it in the next function as well (see pepquantify_funs())
 ``` r
 data_raw <- pepquantify::read_mqdda()
 ```
@@ -110,7 +115,7 @@ list of two containing peptide and protein group data generated by the read func
 if true imputation will be performed if set to false no imputation will be performed (default false)
 
 * n_element_peptide:	
-peptide data is the nth element (usually not necessary to change) (default 1)
+peptide data is the nth element of the list (not necessary to change) (default 1)
 
 * condition1:	
 name of the first condition that should be compared (note that order matters for the fold-change direction) 
@@ -134,23 +139,23 @@ see the perseus documentation "Replace missing values from normal distribution" 
 see the perseus documentation "Replace missing values from normal distribution" (default 0.3)
 
 * n_ko_like:	
-minimum number of peptides that should have missing and valid value pattern (all valid in one condition, less than 2 in the second or otherwise by user defined criteria) (default 2)
+minimum number of peptides that should have missing and valid value pattern (all valid in one condition, maximum 1 in the second, or otherwise by user defined criteria) (default 2)
 
 * fraction_valid:	
-between 0-1. 1 means that imputed peptides are taken into account if they are present in all samples of one of the conditions, 0.5 means if they are present in the half of the samples of one of the conditions. (default 1)
+between 0-1. 1 means that imputed peptides are taken into account if they are present in all samples of one of the conditions (and max 1 in the second condition, see also option "second_condition"), 0.5 means if they are present in the half of the samples of one of the conditions. (default 1)
 
 * second_condition:	
-maximum acceptable number of valid values in other condition when fraction valid is met in the other, (default 1)
+maximum acceptable number of valid values in other condition when fraction valid is met in the other (default 1)
 
 * seed:	
-set seed as values for imputation are derived randomly, seed makes sure the reproducibility. (default 1234)
+as values for imputation are derived randomly, seed makes sure the reproducibility (default 1234)
 
 * fc_threshold:
 minimum fold change for the protein to be considered differentially abundant (in natural scale) (default 1.5)
+
 </details>
   
-  
-  
+    
 ``` r
 msempire_data <- pepquantify_funs(data_raw, condition1 = "name_of_condition_one", condition2 = "name_of_condition_two")
 msempire_calculation(msempire_data, fc_threshold = 1.5)
