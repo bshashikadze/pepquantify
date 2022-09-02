@@ -59,8 +59,9 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
 
      data_peptide <- data_peptide %>%
       dplyr::mutate(unique_id = paste(id, seq(1: nrow(data_peptide)), sep = "."), .keep= "all") %>%
-      dplyr::select(.data$unique_id, .data$id, starts_with("Intensity.")) %>%
+      dplyr::select(.data$id, .data$unique_id, starts_with("Intensity.")) %>%
       dplyr::select(-all_of(exclude_samples))
+
   }
 
 
@@ -70,7 +71,7 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
 
      data_peptide <- data_peptide %>%
       dplyr::mutate(unique_id = paste(id, seq(1: nrow(data_peptide)), sep = "."), .keep="all") %>%
-      dplyr::select(.data$unique_id, .data$id, starts_with("Reporter.intensity.corrected.")) %>%
+      dplyr::select(.data$id, .data$unique_id, starts_with("Reporter.intensity.corrected.")) %>%
       dplyr::select(-all_of(exclude_samples))
 
   # for convention Reporter.intensity.corrected will be replaced by Intensity.
@@ -80,7 +81,7 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
 
 
   # write conditition file
-  Bioreplicate <- colnames(data_peptide)[! colnames(data_peptide) %in% c('unique_id', 'id')]
+  Bioreplicate <- colnames(data_peptide)[! colnames(data_peptide) %in% c('id', 'unique_id')]
   Condition    <- stringr::str_remove(Bioreplicate, "Intensity.")
   Conditions   <- data.frame(Bioreplicate, Condition) %>%
     write.table("conditions.txt", row.names = F, sep = "\t")

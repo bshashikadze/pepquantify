@@ -26,15 +26,15 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
   # get the statistics measured from the valid data. this will be used to build a random distribution from which the values will be
   #drawn
   valid_data_descriptives <- data[[2]] %>%
-    rownames_to_column("unique_id") %>%
+    tibble::rownames_to_column("unique_id") %>%
     tidyr::pivot_longer(names_to = "Bioreplicate", values_to = "Intensity", -.data$unique_id) %>%
     dplyr::group_by(.data$Bioreplicate) %>%
     dplyr::summarise(mean_valid = mean(.data$Intensity, na.rm = T),
               median_valid = median(.data$Intensity, na.rm = T),
-              sd_valid   = sd(.data$Intensity,   na.rm = T),
-              n_valid    = sum(!is.na(.data$Intensity)),
-              n_missing  = nrow(data[[1]]) - .data$n_valid) %>%
-    ungroup()
+              sd_valid     = sd(.data$Intensity,   na.rm = T),
+              n_valid      = sum(!is.na(.data$Intensity)),
+              n_missing    = nrow(data[[1]]) - .data$n_valid) %>%
+    dplyr::ungroup()
 
 
   # imputation
@@ -69,7 +69,7 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
   stopifnot("fraction_valid should be between 0 and 1" = fraction_valid <= 1 & fraction_valid > 0)
 
 
-  # stop if fraction valid is so low that it includes peptides that are already quantifiable by msempire
+  # warn if fraction valid is so low that it includes peptides that are already quantifiable by msempire
   if (fraction_valid * length_cond_1 < data[[5]][1] | fraction_valid * length_cond_2 < data[[5]][2]) {
 
     fraction_valid <- 1
@@ -109,7 +109,7 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
 
   # detect peptides in imputed matrix that can anyway be quantified by msempire so are not necessary to include
   imputed_matrix <- imputed_matrix %>%
-    dplyr::filter(!id %in% peptides_for_msempire_min_2_pep$id)
+    dplyr::filter(!.data$id %in% peptides_for_msempire_min_2_pep$id)
 
 
   # print information about imputed peptides
@@ -125,8 +125,8 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
       dplyr::bind_rows(imputed_matrix) %>%
       dplyr::group_by(.data$id) %>%
       dplyr::mutate(n_pep = dplyr::n()) %>%
-      dplyr::filter(.data$n_pep >= data[[6]]) %>%
       dplyr::ungroup() %>%
+      dplyr::filter(.data$n_pep >= data[[6]]) %>%
       dplyr::select(-.data$id) %>%
       write.table(paste0(condition1, "_vs_", condition2, "/peptidesformsempire.txt"), sep = "\t", row.names = F)
 

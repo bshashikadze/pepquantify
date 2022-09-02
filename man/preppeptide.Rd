@@ -7,8 +7,8 @@
 preppeptide(
   data,
   n_element_peptide = 1,
-  condition1 = "DMD_Old",
-  condition2 = "DMD_Young",
+  condition1,
+  condition2,
   n_condition_1 = 3,
   n_condition_2 = 3,
   min_pep = 2

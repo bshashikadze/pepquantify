@@ -117,8 +117,6 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
     dplyr::mutate_all(~dplyr::na_if(., 0))
 
 
-
-
   #replace P values having value of 1 with with the highest value which is not 1 (this is to properly logarithmize)
   # logarithmize p-value column for plotting as y axis on Volcano
   msempire_results_volcano$log10p=-log10(msempire_results_volcano$p_value)
@@ -133,7 +131,7 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   # print the information
 cat("three files were saved in the working directory:
     1 - msempire_results_raw:     this is the raw results of MS-EmpiRe
-    2 - msempire_results_tidy:    this is the results that has been cleaned-up and can be used for suppl tables
+    2 - msempire_results_tidy:    this is the results that has been cleaned-up and can be used in suppl tables
     3 - msempire_results_volcano: some columns was adjusted to make it suitable for the volcano plot")
 }
 
