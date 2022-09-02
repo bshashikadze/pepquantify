@@ -82,11 +82,12 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
 ### read the data
 *data is loaded once*
 
+*Keep the name as "data_raw", if you change make sure you indicate it in the next function as well (see pepquantify_funs())*
+
 **conditions file will be generated which you should modify according to
 experimental conditions. For more information please refer to the function
 description (type ?read_mqdda in the R console)**
 
-*Keep the name as "data_raw", if you change make sure you indicate it in the next function as well (see pepquantify_funs())*
 <details>
 <summary>Arguments and default values</summary>
 
