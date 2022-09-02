@@ -156,7 +156,7 @@ minimum fold change for the protein to be considered differentially abundant (in
 
 </details>
   
-*Two function below should be run as many times as many comparisons there are, it will generate specific folder for each comparison, e.g. if condition1 = "disease" and condition2 = "healthy", the folder will be generated automatically in the working directory named as disease_vs_healthy and all the outputs will be stored there. If you have other group(s) e.g. treated, you just copy paste two lines of code (below) and run with e.g. condition1 = "disease", condition2 = "treated" and the folder will be generated named as disease_vs_treated. **Also, order matters for the fold-change direction: proteins increased in abundance in the condition1 will have a positive l2fc, therefore it is advisable that condition1 is always disease/treatment and etc. e.g. condition1 = "diabetes", condition2 = "control"**.*
+*Two function below should be run as many times as many comparisons there are, it will generate specific folder for each comparison, e.g. if condition1 = "disease" and condition2 = "healthy", the folder will be generated automatically in the working directory named as disease_vs_healthy and all the outputs will be stored there. If you have other group(s) e.g. treated, you just copy paste two lines of code (below) and run with e.g. condition1 = "disease", condition2 = "treated" and the folder will be generated named as disease_vs_treated. **Also, order matters for the fold-change direction: proteins increased in abundance in the condition1 will have a positive l2fc, therefore it is prefferable that condition1 is always disease/treatment and etc. e.g. condition1 = "diabetes", condition2 = "control"**.*
 
  
 ``` r
