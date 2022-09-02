@@ -84,7 +84,7 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
 ```
 
 ### read the data
-*data should be loaded once and the functions below can be executed as many times as many dual comparisons there are: e.g. cond1 vs cond2, cond1 vs cond3 and etc.*
+*data should be loaded once, while the functions below can be executed as many times as many dual comparisons there are: e.g. cond1 vs cond2, cond1 vs cond3 and etc.*
 
 conditions file will be generated which you should modify according to
 experimental conditions. For more information please refer to the function
@@ -97,7 +97,7 @@ description (type ?read_mqdda in the R console)
 if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
 
 * lfq:
-if non-labelled data is loaded, lfq must be set to true if labelling was performed (e.g. TMT) lfq should be set to false. For TMT Reporter.intensity.corrected is taken for quantification
+if non-labelled data is loaded, lfq must be set to true, if labelling was performed (e.g. TMT) lfq should be set to false. For TMT **Reporter.intensity.corrected** is taken for quantification
 </details> 
 
 *Keep the name as "data_raw", if you change make sure you indicate it in the next function as well (see pepquantify_funs())*
