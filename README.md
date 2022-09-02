@@ -86,6 +86,7 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
 experimental conditions. For more information please refer to the function
 description (type ?read_mqdda in the R console)**
 
+*Keep the name as "data_raw", if you change make sure you indicate it in the next function as well (see pepquantify_funs())*
 <details>
 <summary>Arguments and default values</summary>
 
@@ -96,7 +97,6 @@ if not empty, excludes specified sample/s from further analysis (only if necessa
 if non-labelled data is loaded, lfq must be set to true, if labelling was performed (e.g. TMT) lfq should be set to false. For TMT **Reporter.intensity.corrected** is taken for quantification
 </details> 
 
-*Keep the name as "data_raw", if you change make sure you indicate it in the next function as well (see pepquantify_funs())*
 ``` r
 data_raw <- pepquantify::read_mqdda()
 ```
