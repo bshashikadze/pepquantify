@@ -32,10 +32,13 @@ preppeptide <- function(data, n_element_peptide = 1, condition1, condition2, n_c
 
 
 
+  # stop if conditions_modified.txt does not exist
+  stopifnot("conditions_modified.txt file does not exist" = file.exists("conditions_modified.txt"))
+
+
   # read the modified conditions file
-  if (file.exists("conditions_modified.txt")) {
-    conditions <- read.delim("conditions_modified.txt") }
-  else{cat(" conditions_modified.txt file does not exist ")}
+  conditions <- read.delim("conditions_modified.txt")
+
 
 
 
