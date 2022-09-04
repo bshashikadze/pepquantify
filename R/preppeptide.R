@@ -25,6 +25,7 @@ preppeptide <- function(data, n_element_peptide = 1, condition1, condition2, n_c
 
   if (file.exists(paste0(condition1, "_vs_", condition2))) {
     unlink(paste0(condition1, "_vs_", condition2), recursive = T)
+    stopifnot("it seems you are repeating comparison.. but previous folder can not be removed to overwrite.. close all open files from that folder" = !file.exists(paste0(condition1, "_vs_", condition2)))
     dir.create(paste0(condition1, "_vs_", condition2))
   }
 
