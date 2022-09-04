@@ -25,7 +25,7 @@ if(!require(devtools)){
 devtools::install_github("bshashikadze/pepquantify")
 ```
 
-Additionally you will need an MS-EmpiRe package installed to perform normalization & quantification
+Additionally (if you did not already) you will need an MS-EmpiRe package installed to perform normalization & quantification
 See: https://github.com/zimmerlab/MS-EmpiRe 
 
 ## Example script
