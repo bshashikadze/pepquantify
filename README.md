@@ -31,7 +31,7 @@ See: https://github.com/zimmerlab/MS-EmpiRe
 ## Example script
 
 This is a basic example:
-1. set the working directory (folder which contains proteomics dataset 1 dataset = 1 folder = 1 R session)
+1. set the working directory (folder which contains proteomics dataset)
 
 *pepquantify read functions expect that the working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis (to come soon). See also ?read_mqdda and ?read_diann*
 
