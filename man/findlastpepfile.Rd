@@ -2,7 +2,7 @@
 % Please edit documentation in R/findlastpepfile.R
 \name{findlastpepfile}
 \alias{findlastpepfile}
-\title{Returns the location of the most recent peptides and modified conditions file}
+\title{Returns the location of the most recent peptides and modified conditions file (not supported any more)}
 \usage{
 findlastpepfile()
 }
@@ -10,7 +10,7 @@ findlastpepfile()
 path for the last folder, peptides file and conditions file
 }
 \description{
-Returns the location of the most recent peptides and modified conditions file
+Returns the location of the most recent peptides and modified conditions file (not supported any more)
 }
 \examples{
 findlastpepfile()
