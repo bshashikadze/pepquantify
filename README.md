@@ -65,7 +65,7 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
   require(magrittr)
   # read the data in the expressionset format and perform msempire normalization and quantification  
   # (https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R)
-  msempiredata  <- msEmpiRe::read.standard(msempire_data[[1]], msempire_data[[2]],
+  msempiredata  <- msEmpiRe::read.standard(data[[1]], data[[2]],
                                             prot.id.generator = function(pep) unlist(strsplit(pep, "\\.[0-9]*$"))[1],
                                             signal_pattern="Intensity.*")
   
