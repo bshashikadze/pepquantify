@@ -6,7 +6,7 @@
 #' @import dplyr
 #' @importFrom magrittr %>%
 #' @examples findlastpepfile()
-findlastpepfile_v2 <- function(data = pep_data) {
+findlastpepfile_v2 <- function(data) {
 
   # which is the last folder
   mypath <- getwd()

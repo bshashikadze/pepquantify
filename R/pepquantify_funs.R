@@ -39,7 +39,7 @@ pepquantify::peptimpute(pep_data, downshift = downshift, width = width,
 
 
 # this will find where the necessary files are to pass this information to MS-EmpiRe
-locations_last <- pepquantify::findlastpepfile_v2()
+locations_last <- pepquantify::findlastpepfile_v2(data = pep_data)
 
 
 # return the last path
