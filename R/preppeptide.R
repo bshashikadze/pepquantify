@@ -17,7 +17,8 @@
 #' @examples preppeptide(data, condition1, condition2)
 preppeptide <- function(data, n_element_peptide = 1, condition1, condition2, n_condition_1 = 3, n_condition_2 = 3, min_pep = 2) {
 
-
+  # check if condiiton1 and condition2 are different
+  stopifnot("nothing to compare, condition1 and condition2 must be different" = condition1 != condition2)
 
   # create the sub directory where only the specific comparison will be stored
   # first checks if the file exists if yes it deletes and rewrites, this is crucial in the last step of the
