@@ -166,7 +166,7 @@ minimum fold change for the protein to be considered differentially abundant (in
   
  
 ``` r
-msempire_data <- pepquantify::pepquantify_funs(data_raw, condition1 = "name_of_condition_one", condition2 = "name_of_condition_two")
+msempire_data <- pepquantify::pepquantify_funs(data_raw, condition1 = "name_of_condition_one", condition2 = "name_of_condition_two", imputation = FALSE)
 msempire_calculation(msempire_data, fc_threshold = 1.5)
 ```  
   
