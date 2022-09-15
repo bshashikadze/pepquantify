@@ -1,13 +1,13 @@
 #' Read and filter the DIA quantification data produced by the DIA-NN
 #'
-#' @param Q.Value refer to https://github.com/vdemichev/DiaNN
-#' @param Global.Q.Value refer to https://github.com/vdemichev/DiaNN
-#' @param Global.PG.Q.Value refer to https://github.com/vdemichev/DiaNN
-#' @param Lib.Q.Value refer to https://github.com/vdemichev/DiaNN
-#' @param Lib.PG.Q.Value refer to https://github.com/vdemichev/DiaNN
+#' @param Q_Value refer to https://github.com/vdemichev/DiaNN
+#' @param Global_Q_Value refer to https://github.com/vdemichev/DiaNN
+#' @param Global_PG_Q_Value refer to https://github.com/vdemichev/DiaNN
+#' @param Lib_Q_Value refer to https://github.com/vdemichev/DiaNN
+#' @param Lib_PG_Q_Value refer to https://github.com/vdemichev/DiaNN
 #' @param experimental_library set true if you use empirical libraries (e.g. prefractionation or GPF), false in case of lib free search with mbr enabled
 #' @param unique_peptides_only TRUE only unique peptides will be used for quantification (recommended)
-#' @param Quant.Qual  refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5
+#' @param Quant_Qual  refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5
 #' @param remove_contaminants if during DIA-NN search contaminants fasta file has been used, remove contaminants can be set to TRUE (directory should contain the same contaminats fasta file). false otherwise
 #' @param id_column default "Genes"
 #' @param exclude_samples if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
@@ -26,12 +26,12 @@
 #' @examples read_diann(exclude_samples=c("samplename"), experimental_library = TRUE)
 
 
-read_diann <- function(Q.Value = 0.01, Global.Q.Value = 0.01,
-                                   Global.PG.Q.Value = 0.01, Lib.Q.Value = 0.01,
-                                   Lib.PG.Q.Value = 0.01,
+read_diann <- function(Q_Value = 0.01, Global_Q_Value = 0.01,
+                                   Global_PG_Q_Value = 0.01, Lib_Q_Value = 0.01,
+                                   Lib_PG_Q_Value = 0.01,
                                    experimental_library,
                                    unique_peptides_only = TRUE,
-                                   Quant.Qual = 0.5, remove_contaminants = F,
+                                   Quant_Qual = 0.5, remove_contaminants = F,
                                    id_column = "Genes", quantity_column = "Genes.MaxLFQ.Unique",
                                    sum_charge = TRUE, save_supplementary = TRUE, exclude_samples=c()) {
 
@@ -56,19 +56,19 @@ read_diann <- function(Q.Value = 0.01, Global.Q.Value = 0.01,
   if (experimental_library == T) {
 
     data <- data %>%
-    dplyr::filter(.data$Q.Value           <= Q.Value) %>%
-    dplyr::filter(.data$Global.Q.Value    <= Global.Q.Value) %>%
-    dplyr::filter(.data$Global.PG.Q.Value <= Global.PG.Q.Value)
+    dplyr::filter(.data$Q.Value           <= Q_Value) %>%
+    dplyr::filter(.data$Global.Q.Value    <= Global_Q_Value) %>%
+    dplyr::filter(.data$Global.PG.Q.Value <= Global_PG_Q_Value)
 
   }
 
   # library free analysis (with mbr enabled)
   else {
 
-    data <- data %>%
-      dplyr::filter(.data$Q.Value         <= Q.Value)%>%
-      dplyr::filter(.data$Lib.Q.Value     <= Lib.Q.Value) %>%
-      dplyr::filter(.data$Lib.PG.Q.Value  <= Lib.PG.Q.Value)
+    data3 <- data %>%
+      dplyr::filter(.data$Q.Value         <= Q_Value) %>%
+      dplyr::filter(.data$Lib.Q.Value     <= Lib_Q_Value) %>%
+      dplyr::filter(.data$Lib.PG.Q.Value  <= Lib_PG_Q_Value)
 
   }
 
@@ -83,7 +83,7 @@ read_diann <- function(Q.Value = 0.01, Global.Q.Value = 0.01,
 
   data <- data %>%
     dplyr::filter(.data$Proteotypic      >= unique) %>%
-    dplyr::filter(.data$Quantity.Quality >= Quant.Qual)
+    dplyr::filter(.data$Quantity.Quality >= Quant_Qual)
 
   # removing contaminant entries (according to maxquant common contaminants fasta file, which can be included during DIA-NN search)
 
@@ -98,7 +98,9 @@ read_diann <- function(Q.Value = 0.01, Global.Q.Value = 0.01,
         filter(!stringr::str_detect(.data$Protein.Group, stringr::str_c(contaminant.names, collapse="|")))}
 
     else
+
     {
+
     cat("Contaminants fasta file was not found in working directory,
                 add fasta file or set remove_contaminants to false")
 

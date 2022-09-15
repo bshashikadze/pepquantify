@@ -5,14 +5,14 @@
 \title{Read and filter the DIA quantification data produced by the DIA-NN}
 \usage{
 read_diann(
-  Q.Value = 0.01,
-  Global.Q.Value = 0.01,
-  Global.PG.Q.Value = 0.01,
-  Lib.Q.Value = 0.01,
-  Lib.PG.Q.Value = 0.01,
+  Q_Value = 0.01,
+  Global_Q_Value = 0.01,
+  Global_PG_Q_Value = 0.01,
+  Lib_Q_Value = 0.01,
+  Lib_PG_Q_Value = 0.01,
   experimental_library,
   unique_peptides_only = TRUE,
-  Quant.Qual = 0.5,
+  Quant_Qual = 0.5,
   remove_contaminants = F,
   id_column = "Genes",
   quantity_column = "Genes.MaxLFQ.Unique",
@@ -22,21 +22,21 @@ read_diann(
 )
 }
 \arguments{
-\item{Q.Value}{refer to https://github.com/vdemichev/DiaNN}
+\item{Q_Value}{refer to https://github.com/vdemichev/DiaNN}
 
-\item{Global.Q.Value}{refer to https://github.com/vdemichev/DiaNN}
+\item{Global_Q_Value}{refer to https://github.com/vdemichev/DiaNN}
 
-\item{Global.PG.Q.Value}{refer to https://github.com/vdemichev/DiaNN}
+\item{Global_PG_Q_Value}{refer to https://github.com/vdemichev/DiaNN}
 
-\item{Lib.Q.Value}{refer to https://github.com/vdemichev/DiaNN}
+\item{Lib_Q_Value}{refer to https://github.com/vdemichev/DiaNN}
 
-\item{Lib.PG.Q.Value}{refer to https://github.com/vdemichev/DiaNN}
+\item{Lib_PG_Q_Value}{refer to https://github.com/vdemichev/DiaNN}
 
 \item{experimental_library}{set true if you use empirical libraries (e.g. prefractionation or GPF), false in case of lib free search with mbr enabled}
 
 \item{unique_peptides_only}{TRUE only unique peptides will be used for quantification (recommended)}
 
-\item{Quant.Qual}{refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5}
+\item{Quant_Qual}{refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5}
 
 \item{remove_contaminants}{if during DIA-NN search contaminants fasta file has been used, remove contaminants can be set to TRUE (directory should contain the same contaminats fasta file). false otherwise}
 
