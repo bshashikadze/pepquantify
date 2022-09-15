@@ -6,7 +6,7 @@
 \alias{pepquantify-package}
 \title{pepquantify: Prepare Data For The Peptide Level Quantification}
 \description{
-Takes the peptide level output of the proteomics dataset and proposes various options to pre-filter and clean up the data and prepare for the further analysis with an 'MS-EmpiRe' package. Also, 'pepquantify' can perform missing value imputation with user-defined settings, to include peptides with the high detection rate in only one condition, but low in another, in the quantitative analysis.
+Takes the peptide level output of the proteomics dataset (DDA label-free and labelled as well as DIA) and proposes various options to pre-filter and clean up the data and prepare for the further analysis with an 'MS-EmpiRe' package. Also, 'pepquantify' can perform missing value imputation with user-defined settings, to include peptides with the high detection rate in only one condition, but low in another, in the quantitative analysis.
 }
 \author{
 \strong{Maintainer}: Bachuki Shashikadze \email{bachuki.shashikadze@gmail.com} (\href{https://orcid.org/0000-0003-4558-0785}{ORCID})

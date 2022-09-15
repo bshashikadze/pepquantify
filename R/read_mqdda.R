@@ -11,6 +11,8 @@
 #' @importFrom magrittr %>%
 #'
 #' @examples read_mqdda(exclude_samples=c("samplename"), lfq = TRUE)
+#'
+#'
 read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
 
 
@@ -58,7 +60,7 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
   stopifnot("columns starting with Intensity. do not exist, did you set lfq to true for the labelled data?" = any(grepl("Intensity.", colnames(data_peptide))))
 
      data_peptide <- data_peptide %>%
-      dplyr::mutate(unique_id = paste(id, seq(1: nrow(data_peptide)), sep = "."), .keep= "all") %>%
+      dplyr::mutate(unique_id = paste(.data$id, seq(1: nrow(data_peptide)), sep = "."), .keep= "all") %>%
       dplyr::select(.data$id, .data$unique_id, starts_with("Intensity.")) %>%
       dplyr::select(-all_of(exclude_samples))
 

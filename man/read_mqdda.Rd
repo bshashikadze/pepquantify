@@ -22,4 +22,6 @@ Note that first you need to copy the conditions.txt file and rename as condition
 }
 \examples{
 read_mqdda(exclude_samples=c("samplename"), lfq = TRUE)
+
+
 }
