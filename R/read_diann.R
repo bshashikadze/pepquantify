@@ -226,6 +226,7 @@ read_diann <- function(Q.Value = 0.01, Global.Q.Value = 0.01,
   data_peptide <- data_peptide %>%
   dplyr::select(dplyr::all_of(id_column), tidyr::starts_with("Precursor.Quantity")) %>%
   dplyr::rename(id=1) %>%
+  dplyr::mutate_all(~replace(., is.na(.), 0)) %>%
   dplyr::mutate(unique_id = paste(.data$id, seq(1: nrow(data_peptide)), sep = "."), .keep="all") %>%
   dplyr::select(-dplyr::all_of(exclude_samples))
 
