@@ -19,10 +19,12 @@
 #' @importFrom seqinr read.fasta getName
 #'
 #'
+#'
 #' @return The list of three elements, the first is the filtered peptides file, the second is the filtered protein groups file and the last is the character that stores the type of experiment
 #' @export
 #'
 #' @examples read_diann(exclude_samples=c("samplename"), experimental_library = TRUE)
+
 
 read_diann <- function(Q.Value = 0.01, Global.Q.Value = 0.01,
                                    Global.PG.Q.Value = 0.01, Lib.Q.Value = 0.01,
@@ -106,13 +108,13 @@ read_diann <- function(Q.Value = 0.01, Global.Q.Value = 0.01,
 
   else    {
 
-    data_filtered <- data
+    data <- data
 
     }
 
 
   # subset for necessary columns
-  data_filtered <- data_filtered %>%
+  data_filtered <- data %>%
     dplyr::select("Precursor.Quantity", "Precursor.Normalised", "Run", dplyr::all_of(quantity_column),
                   "Stripped.Sequence", dplyr::all_of(id_column))
 
@@ -172,6 +174,13 @@ read_diann <- function(Q.Value = 0.01, Global.Q.Value = 0.01,
   }
 
 
+  # write results
+  if (save_supplementary == TRUE) {
+
+    write.table(data_peptide, "peptides.txt", row.names = F, sep = "\t")
+
+  }
+
 
   # protein level data
   data_pg <- data %>%
@@ -203,7 +212,8 @@ read_diann <- function(Q.Value = 0.01, Global.Q.Value = 0.01,
   data_pg <- data_pg %>%
     dplyr::left_join(n_pep)
 
-  # write results
+
+
   # write results
   if (save_supplementary == TRUE) {
 
@@ -214,10 +224,14 @@ read_diann <- function(Q.Value = 0.01, Global.Q.Value = 0.01,
 
   # prepare final matrix for MS-EmpiRe
   data_peptide <- data_peptide %>%
-  dplyr::select(dplyr::all_of(id_column), tidyr::starts_with("Precursor.Normalised")) %>%
+  dplyr::select(dplyr::all_of(id_column), tidyr::starts_with("Precursor.Quantity")) %>%
   dplyr::rename(id=1) %>%
   dplyr::mutate(unique_id = paste(.data$id, seq(1: nrow(data_peptide)), sep = "."), .keep="all") %>%
   dplyr::select(-dplyr::all_of(exclude_samples))
+
+
+  # for convention Precursor.Normalised will be replaced by Intensity.
+  names(data_peptide)<-gsub("Precursor.Quantity_", "Intensity.", colnames(data_peptide))
 
 
   # write conditition file
