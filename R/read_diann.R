@@ -8,7 +8,6 @@
 #' @param experimental_library set true if you use empirical libraries (e.g. prefractionation or GPF), false in case of lib free search with mbr enabled
 #' @param unique_peptides_only TRUE only unique peptides will be used for quantification (recommended)
 #' @param Quant_Qual  refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5
-#' @param remove_contaminants if during DIA-NN search contaminants fasta file has been used, remove contaminants can be set to TRUE (directory should contain the same contaminats fasta file). false otherwise
 #' @param id_column default "Genes"
 #' @param exclude_samples if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
 #' @param quantity_column default "Genes.MaxLFQ.Unique", not important for MS-EmpiRe
@@ -31,7 +30,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
                                      Lib_PG_Q_Val = 0.01,
                                      experimental_library,
                                      unique_peptides_only = TRUE,
-                                     Quant_Qual = 0.5, remove_contaminants = F,
+                                     Quant_Qual = 0.5,
                                      id_column = "Genes", quantity_column = "Genes.MaxLFQ.Unique",
                                      sum_charge = TRUE, save_supplementary = TRUE, exclude_samples=c()) {
 
@@ -70,6 +69,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
       dplyr::filter(.data$Lib.Q.Value     <= Lib_Q_Val) %>%
       dplyr::filter(.data$Lib.PG.Q.Value  <= Lib_PG_Q_Val)
 
+
   }
 
   # filter for unique peptides and signal quality
@@ -84,35 +84,6 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   data <- data %>%
     dplyr::filter(.data$Proteotypic      >= unique) %>%
     dplyr::filter(.data$Quantity.Quality >= Quant_Qual)
-
-  # removing contaminant entries (according to maxquant common contaminants fasta file, which can be included during DIA-NN search)
-
-  if (remove_contaminants == T) {
-
-    if (file.exists("contaminants.fasta"))
-
-      {
-      contamintants           <- seqinr::read.fasta("contaminants.fasta")
-      contaminant.names       <- seqinr::getName(contamintants)
-      data <- data %>%
-        filter(!stringr::str_detect(.data$Protein.Group, stringr::str_c(contaminant.names, collapse="|")))}
-
-    else
-
-    {
-
-    cat("Contaminants fasta file was not found in working directory,
-                add fasta file or set remove_contaminants to false")
-
-      }
-
-    }
-
-  else    {
-
-    data <- data
-
-    }
 
 
   # subset for necessary columns
@@ -185,7 +156,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
 
   # protein level data
-  data_pg <- data %>%
+  data_pg <- data_filtered %>%
     dplyr::select(.data$Run, dplyr::all_of(id_column), dplyr::all_of(quantity_column)) %>%
     dplyr::distinct(.data$Run, !!as.symbol(id_column), .keep_all = T) %>%
     dplyr::mutate(Run = stringr::str_c("LFQ.intensity_", .data$Run)) %>%
@@ -202,6 +173,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   n_pep$pg_Q_Val                <-         data$Global.PG.Q.Value[match(n_pep[[id_column]], data[[id_column]])]
   n_pep$protein_groups            <-             data$Protein.Group[match(n_pep[[id_column]], data[[id_column]])]
   n_pep$First_Protein_Description <- data$First.Protein.Description[match(n_pep[[id_column]], data[[id_column]])]
+
 
   # remove entries without gene names
   if ("Genes" %in% colnames(data_peptide)) {

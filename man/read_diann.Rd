@@ -13,7 +13,6 @@ read_diann(
   experimental_library,
   unique_peptides_only = TRUE,
   Quant_Qual = 0.5,
-  remove_contaminants = F,
   id_column = "Genes",
   quantity_column = "Genes.MaxLFQ.Unique",
   sum_charge = TRUE,
@@ -37,8 +36,6 @@ read_diann(
 \item{unique_peptides_only}{TRUE only unique peptides will be used for quantification (recommended)}
 
 \item{Quant_Qual}{refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5}
-
-\item{remove_contaminants}{if during DIA-NN search contaminants fasta file has been used, remove contaminants can be set to TRUE (directory should contain the same contaminats fasta file). false otherwise}
 
 \item{id_column}{default "Genes"}
 
