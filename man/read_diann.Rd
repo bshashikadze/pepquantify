@@ -5,11 +5,11 @@
 \title{Read and filter the DIA quantification data produced by the DIA-NN}
 \usage{
 read_diann(
-  Q_Value = 0.01,
-  Global_Q_Value = 0.01,
-  Global_PG_Q_Value = 0.01,
-  Lib_Q_Value = 0.01,
-  Lib_PG_Q_Value = 0.01,
+  Q_Val = 0.01,
+  Global_Q_Val = 0.01,
+  Global_PG_Q_Val = 0.01,
+  Lib_Q_Val = 0.01,
+  Lib_PG_Q_Val = 0.01,
   experimental_library,
   unique_peptides_only = TRUE,
   Quant_Qual = 0.5,
@@ -22,15 +22,15 @@ read_diann(
 )
 }
 \arguments{
-\item{Q_Value}{refer to https://github.com/vdemichev/DiaNN}
+\item{Q_Val}{refer to https://github.com/vdemichev/DiaNN}
 
-\item{Global_Q_Value}{refer to https://github.com/vdemichev/DiaNN}
+\item{Global_Q_Val}{refer to https://github.com/vdemichev/DiaNN}
 
-\item{Global_PG_Q_Value}{refer to https://github.com/vdemichev/DiaNN}
+\item{Global_PG_Q_Val}{refer to https://github.com/vdemichev/DiaNN}
 
-\item{Lib_Q_Value}{refer to https://github.com/vdemichev/DiaNN}
+\item{Lib_Q_Val}{refer to https://github.com/vdemichev/DiaNN}
 
-\item{Lib_PG_Q_Value}{refer to https://github.com/vdemichev/DiaNN}
+\item{Lib_PG_Q_Val}{refer to https://github.com/vdemichev/DiaNN}
 
 \item{experimental_library}{set true if you use empirical libraries (e.g. prefractionation or GPF), false in case of lib free search with mbr enabled}
 

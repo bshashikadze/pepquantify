@@ -1,10 +1,10 @@
 #' Read and filter the DIA quantification data produced by the DIA-NN
 #'
-#' @param Q_Value refer to https://github.com/vdemichev/DiaNN
-#' @param Global_Q_Value refer to https://github.com/vdemichev/DiaNN
-#' @param Global_PG_Q_Value refer to https://github.com/vdemichev/DiaNN
-#' @param Lib_Q_Value refer to https://github.com/vdemichev/DiaNN
-#' @param Lib_PG_Q_Value refer to https://github.com/vdemichev/DiaNN
+#' @param Q_Val refer to https://github.com/vdemichev/DiaNN
+#' @param Global_Q_Val refer to https://github.com/vdemichev/DiaNN
+#' @param Global_PG_Q_Val refer to https://github.com/vdemichev/DiaNN
+#' @param Lib_Q_Val refer to https://github.com/vdemichev/DiaNN
+#' @param Lib_PG_Q_Val refer to https://github.com/vdemichev/DiaNN
 #' @param experimental_library set true if you use empirical libraries (e.g. prefractionation or GPF), false in case of lib free search with mbr enabled
 #' @param unique_peptides_only TRUE only unique peptides will be used for quantification (recommended)
 #' @param Quant_Qual  refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5
@@ -26,14 +26,14 @@
 #' @examples read_diann(exclude_samples=c("samplename"), experimental_library = TRUE)
 
 
-read_diann <- function(Q_Value = 0.01, Global_Q_Value = 0.01,
-                                   Global_PG_Q_Value = 0.01, Lib_Q_Value = 0.01,
-                                   Lib_PG_Q_Value = 0.01,
-                                   experimental_library,
-                                   unique_peptides_only = TRUE,
-                                   Quant_Qual = 0.5, remove_contaminants = F,
-                                   id_column = "Genes", quantity_column = "Genes.MaxLFQ.Unique",
-                                   sum_charge = TRUE, save_supplementary = TRUE, exclude_samples=c()) {
+read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
+                                     Global_PG_Q_Val = 0.01, Lib_Q_Val = 0.01,
+                                     Lib_PG_Q_Val = 0.01,
+                                     experimental_library,
+                                     unique_peptides_only = TRUE,
+                                     Quant_Qual = 0.5, remove_contaminants = F,
+                                     id_column = "Genes", quantity_column = "Genes.MaxLFQ.Unique",
+                                     sum_charge = TRUE, save_supplementary = TRUE, exclude_samples=c()) {
 
   stopifnot("working directory does not contain .tsv file; make sure your working directory contains main output of the DIA-NN" =
               any(stringr::str_ends(list.files(getwd()), ".tsv")))
@@ -56,19 +56,19 @@ read_diann <- function(Q_Value = 0.01, Global_Q_Value = 0.01,
   if (experimental_library == T) {
 
     data <- data %>%
-    dplyr::filter(.data$Q.Value           <= Q_Value) %>%
-    dplyr::filter(.data$Global.Q.Value    <= Global_Q_Value) %>%
-    dplyr::filter(.data$Global.PG.Q.Value <= Global_PG_Q_Value)
+    dplyr::filter(.data$Q.Value           <= Q_Val) %>%
+    dplyr::filter(.data$Global.Q.Value    <= Global_Q_Val) %>%
+    dplyr::filter(.data$Global.PG.Q.Value <= Global_PG_Q_Val)
 
   }
 
   # library free analysis (with mbr enabled)
   else {
 
-    data3 <- data %>%
-      dplyr::filter(.data$Q.Value         <= Q_Value) %>%
-      dplyr::filter(.data$Lib.Q.Value     <= Lib_Q_Value) %>%
-      dplyr::filter(.data$Lib.PG.Q.Value  <= Lib_PG_Q_Value)
+    data <- data %>%
+      dplyr::filter(.data$Q.Value         <= Q_Val) %>%
+      dplyr::filter(.data$Lib.Q.Value     <= Lib_Q_Val) %>%
+      dplyr::filter(.data$Lib.PG.Q.Value  <= Lib_PG_Q_Val)
 
   }
 
@@ -157,7 +157,7 @@ read_diann <- function(Q_Value = 0.01, Global_Q_Value = 0.01,
 
 
   data_peptide$protein_group   <- data$Protein.Group[match(data_peptide[[id_column]], data[[id_column]])]
-  data_peptide$peptide_q_value <- data$Global.Q.Value[match(data_peptide[[id_column]], data[[id_column]])]
+  data_peptide$peptide_Q_Val <- data$Global.Q.Value[match(data_peptide[[id_column]], data[[id_column]])]
 
 
 
@@ -165,7 +165,7 @@ read_diann <- function(Q_Value = 0.01, Global_Q_Value = 0.01,
   data_peptide <- data_peptide %>%
     dplyr::select(dplyr::all_of(id_column), .data$protein_group, .data$Stripped.Sequence,
                   starts_with("Precursor.Quantity"), starts_with("Precursor.Quantity"),
-                  starts_with("Precursor.Normalised"), .data$peptide_q_value)
+                  starts_with("Precursor.Normalised"), .data$peptide_Q_Val)
 
 
   # remove entries without gene names
@@ -199,7 +199,7 @@ read_diann <- function(Q_Value = 0.01, Global_Q_Value = 0.01,
 
 
   # match other columns
-  n_pep$pg_q_value                <-         data$Global.PG.Q.Value[match(n_pep[[id_column]], data[[id_column]])]
+  n_pep$pg_Q_Val                <-         data$Global.PG.Q.Value[match(n_pep[[id_column]], data[[id_column]])]
   n_pep$protein_groups            <-             data$Protein.Group[match(n_pep[[id_column]], data[[id_column]])]
   n_pep$First_Protein_Description <- data$First.Protein.Description[match(n_pep[[id_column]], data[[id_column]])]
 
