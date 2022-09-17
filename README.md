@@ -225,6 +225,7 @@ References:
 2.	Flenkenthaler, F., et al., Differential Effects of Insulin-Deficient Diabetes Mellitus on Visceral vs. Subcutaneous Adipose Tissue-Multi-omics Insights From the Munich MIDY Pig Model. Frontiers in medicine, 2021. 8: p. 751277-751277.
 3.	Stirm, M., et al., A scalable, clinically severe pig model for Duchenne muscular dystrophy. Disease Models & Mechanisms, 2021. 14(12).
 4.	Demichev, V., et al., DIA-NN: neural networks and interference correction enable deep proteome coverage in high throughput. Nat Methods, 2020. 17(1): p. 41-44.
+5. Tyanova, S., T. Temu, and J. Cox, The MaxQuant computational platform for mass spectrometry-based shotgun proteomics. Nat Protoc, 2016. 11(12): p. 2301-2319.
 
 
   
