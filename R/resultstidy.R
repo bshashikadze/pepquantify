@@ -107,7 +107,6 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
 
   if (data2[[3]] == "DIA") {
 
-    msempire_results$protein_groups            <- data2[[2]]$protein_groups[match(msempire_results$accession, data2[[2]][[data2[[4]]]])]
     msempire_results$First_Protein_Description <- data2[[2]]$First_Protein_Description[match(msempire_results$accession, data2[[2]][[data2[[4]]]])]
 
    }

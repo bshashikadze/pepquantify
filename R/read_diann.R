@@ -127,7 +127,6 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
 
 
-  data_peptide$protein_group   <- data$Protein.Group[match(data_peptide[[id_column]], data[[id_column]])]
   data_peptide$peptide_Q_Val <- data$Global.Q.Value[match(data_peptide[[id_column]], data[[id_column]])]
 
 
@@ -170,9 +169,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
 
   # match other columns
-  n_pep$pg_Q_Val                <-         data$Global.PG.Q.Value[match(n_pep[[id_column]], data[[id_column]])]
-  n_pep$protein_groups            <-             data$Protein.Group[match(n_pep[[id_column]], data[[id_column]])]
-  n_pep$First_Protein_Description <- data$First.Protein.Description[match(n_pep[[id_column]], data[[id_column]])]
+  n_pep$pg_Q_Val                  <- data$Global.PG.Q.Value[match(n_pep[[id_column]], data[[id_column]])]
 
 
   # remove entries without gene names
