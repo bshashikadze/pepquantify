@@ -116,6 +116,7 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
     dplyr::mutate_all(~dplyr::na_if(., 0))
 
 
+
   #replace P values having value of 1 with with the highest value which is not 1 (this is to properly logarithmize)
   # logarithmize p-value column for plotting as y axis on Volcano
   msempire_results_volcano$log10p=-log10(msempire_results_volcano$p_value)
