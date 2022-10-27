@@ -6,7 +6,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-pepquantify (v2.0) takes the peptide level output of the proteomics dataset and
+pepquantify (v2.01 27.10.2022) takes the peptide level output of the proteomics dataset and
 proposes various options to pre-filter and clean up the data and prepare
 for further analysis with an ‘MS-EmpiRe’ package. Also,
 ‘pepquantify’ can perform missing value imputation with user-defined
@@ -33,7 +33,7 @@ See: https://github.com/zimmerlab/MS-EmpiRe
 This is a basic example:
 1. set the working directory (folder which contains proteomics dataset)
 
-*pepquantify read functions expect that the working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis (to come soon). See also ?read_mqdda and ?read_diann*
+*pepquantify read functions expect that the working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis. See also ?read_mqdda and ?read_diann*
 
 ### load the libraries
 *The vast majority of pepquantify functions are written using tidyverse package collection, they will be imported automatically*
@@ -54,8 +54,8 @@ note1: this function consists with codes which can be found in -
 https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R 
 note2: this is only an example code and for more information you should
 refer to the documentation of an MS-EmpiRe package. 
-note3: in msEmpiRe::read.standard I usually use different regext for unlisting.
-This is iportant to remove unique number at the end of the protein ids which is added by pepquantify read functions and is neccessary for MS-EmpiRe read.standard function. The pattern used in the following function removes everything after the last dot (.), while the original pattern in the read.standard removes after the first dot, which is inconvinient in case of ncbi refseq protein database which has version numbers e.g. XP_123456.1
+note3: in msEmpiRe::read.standard I usually use different regex for unlisting.
+This is iportant to remove unique number at the end of the protein ids which is added by pepquantify read functions and is neccessary for MS-EmpiRe read.standard function. 
 </details>
 
 
@@ -87,7 +87,7 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
 <summary>Arguments and default values</summary>
 
 * exclude_samples:
-if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
+if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA. sample name should be written as - "Intensity.samplename")
 
 * lfq:
 if non-labelled data is loaded, lfq must be set to true, if labelling was performed (e.g. TMT) lfq should be set to false. For TMT **Reporter.intensity.corrected** is taken for quantification
