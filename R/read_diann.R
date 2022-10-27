@@ -133,7 +133,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
   # re-order
   data_peptide <- data_peptide %>%
-    dplyr::select(dplyr::all_of(id_column), .data$protein_group, .data$Stripped.Sequence,
+    dplyr::select(dplyr::all_of(id_column), .data$Stripped.Sequence,
                   starts_with("Precursor.Quantity"), starts_with("Precursor.Quantity"),
                   starts_with("Precursor.Normalised"), .data$peptide_Q_Val)
 
