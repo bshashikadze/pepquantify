@@ -86,6 +86,11 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
     dplyr::filter(.data$Quantity.Quality >= Quant_Qual)
 
 
+  # save filtered data
+  write.table(data, "diannoutput_filtered.tsv", sep = "\t", row.names = F, quote = F)
+
+
+
   # subset for necessary columns
   data_filtered <- data %>%
     dplyr::select("Precursor.Quantity", "Precursor.Normalised", "Run", dplyr::all_of(quantity_column),
