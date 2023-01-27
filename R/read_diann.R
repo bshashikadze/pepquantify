@@ -42,7 +42,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # find the dia nn main output (naivly assumed that the largest file with extension .tsv is the one)
   raw_diann_path <- data.frame(list.files(getwd()), file.size(list.files(getwd()))) %>%
     dplyr::rename(files = 1, size = 2) %>%
-    dplyr::filter(stringr::str_ends(.data$files, ".tsv") & .data$size == max(.data$size)) %>%
+    dplyr::filter(stringr::str_ends(.data$files, ".tsv") & .data$size == max(.data$size, na.rm = T)) %>%
     dplyr::select(.data$files) %>%
     as.character()
 
