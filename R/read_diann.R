@@ -204,11 +204,8 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   dplyr::rename(id=1) %>%
   dplyr::mutate_all(~replace(., is.na(.), 0)) %>%
   dplyr::mutate(unique_id = paste(.data$id, seq(1: nrow(data_peptide)), sep = "."), .keep="all") %>%
+  dplyr::rename_all(~str_replace(.,"Precursor.Quantity_", "Intensity.")) %>%
   dplyr::select(-dplyr::all_of(exclude_samples))
-
-
-  # for convention Precursor.Normalised will be replaced by Intensity.
-  names(data_peptide)<-gsub("Precursor.Quantity_", "Intensity.", colnames(data_peptide))
 
 
   # write conditition file
