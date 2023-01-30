@@ -118,8 +118,8 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
   else {
 
-    # aggregate charge states by taking the precursor with the highest intensity
-    data_peptide <- data_peptide %>%
+  # aggregate charge states by taking the precursor with the highest intensity
+  data_peptide <- data_peptide %>%
       dplyr::group_by(Run, Stripped.Sequence, !!as.symbol(id_column)) %>%
       dplyr::summarise(Precursor.Quantity   = max(Precursor.Quantity),
                        Precursor.Normalised = max(Precursor.Normalised)) %>%
@@ -164,7 +164,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
     dplyr::select(!!as.symbol(id_column), !!as.symbol(second_id_column)) %>%
     dplyr::distinct(!!as.symbol(id_column), !!as.symbol(second_id_column), .keep_all = T) %>%
     group_by(!!as.symbol(id_column)) %>%
-    dplyr::summarize(second_ids =paste(!!as.symbol(second_id_column), collapse=",")) %>%
+    dplyr::summarize(second_ids = paste(!!as.symbol(second_id_column), collapse=",")) %>%
     dplyr::ungroup()
 
 
@@ -196,7 +196,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # aggregate data
   if (include_mod_in_pepreport == T) {
 
-    prec_uggregated <- precursors_data_modification %>%
+      prec_uggregated <- precursors_data_modification %>%
       dplyr::left_join(precursors_data_qvalue) %>%
       dplyr::left_join(precursors_data_charge)
   }
@@ -210,7 +210,8 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # add data to peptides
   data_peptide <- data_peptide %>%
     dplyr::left_join(prec_uggregated) %>%
-    dplyr::left_join(combined_additional)
+    dplyr::left_join(data %>% dplyr::select(Stripped.Sequence, !!as.symbol(second_id_column)) %>%
+                       dplyr::distinct(Stripped.Sequence, !!as.symbol(second_id_column), .keep_all = T))
 
 
 
@@ -245,7 +246,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
 
   # match other columns
-  n_pep$pg_Q_Val                  <- data$Global.PG.Q.Value[match(n_pep[[id_column]], data[[id_column]])]
+  n_pep$pg_Q_Val    <- data$Global.PG.Q.Value[match(n_pep[[id_column]], data[[id_column]])]
 
 
   # remove entries without gene names
