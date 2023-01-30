@@ -6,7 +6,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-pepquantify (v2.01 27.10.2022) takes the peptide level output of the proteomics dataset and
+pepquantify (v2.1) takes the peptide level output of the proteomics dataset and
 proposes various options to pre-filter and clean up the data and prepare
 for further analysis with an ‘MS-EmpiRe’ package. Also,
 ‘pepquantify’ can perform missing value imputation with user-defined
@@ -124,6 +124,7 @@ if not empty, excludes specified sample/s from further analysis (only if necessa
 * Quant_Qual: (Quantity.Quality) refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5
 * id_column: default "Genes"
 * exclude_samples: if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
+* include_mod_in_pepreport default FALSE, if true includes modifications in the output peptide file (currently only Carbamidomethyl (C))
 * quantity_column: default "Genes.MaxLFQ.Unique", not important for MS-EmpiRe
   
 </details> 
