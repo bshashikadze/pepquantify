@@ -140,7 +140,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
     precursors_data_modification <- data %>%
       dplyr::select(Modified.Sequence, Stripped.Sequence) %>%
       dplyr::mutate(Modification = str_extract_all(Modified.Sequence,"(?<=\\().+(?=\\))")) %>%
-      dplyr::mutate(Modification = case_when(mod == "UniMod:4" ~ "Carbamidomethyl (C)", TRUE ~ "")) %>%
+      dplyr::mutate(Modification = case_when(Modification == "UniMod:4" ~ "Carbamidomethyl (C)", TRUE ~ "")) %>%
       dplyr::distinct(Stripped.Sequence, Modification, .keep_all = T) %>%
       dplyr::group_by(Stripped.Sequence) %>%
       dplyr::summarize(Modification=paste(Modification,collapse=";")) %>%
