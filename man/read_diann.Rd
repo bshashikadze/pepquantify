@@ -14,7 +14,9 @@ read_diann(
   unique_peptides_only = TRUE,
   Quant_Qual = 0.5,
   id_column = "Genes",
+  second_id_column = "Protein.Group",
   quantity_column = "Genes.MaxLFQ.Unique",
+  for_msempire = T,
   sum_charge = TRUE,
   save_supplementary = TRUE,
   exclude_samples = c(),
@@ -38,9 +40,13 @@ read_diann(
 
 \item{Quant_Qual}{refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5}
 
-\item{id_column}{default "Genes"}
+\item{id_column}{default "Genes" (can be switched to Protein.Group)}
+
+\item{second_id_column}{default "Protein.Group" (can be switched to Genes)}
 
 \item{quantity_column}{default "Genes.MaxLFQ.Unique", not important for MS-EmpiRe}
+
+\item{for_msempire}{default TRUE so pepquantify will prepare data for MS-EmpiRe quantification, if purpose is to filter DIA-NN output and generate peptides and protein groups file set to false}
 
 \item{sum_charge}{how precursor charge states will be aggregated to peptide level, True means the sum will be taken, in case of false, precursor with the highest intensity will be kept, default false}
 

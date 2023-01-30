@@ -8,11 +8,13 @@
 #' @param experimental_library set true if you use empirical libraries (e.g. prefractionation or GPF), false in case of lib free search with mbr enabled
 #' @param unique_peptides_only TRUE only unique peptides will be used for quantification (recommended)
 #' @param Quant_Qual  refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5
-#' @param id_column default "Genes"
+#' @param id_column default "Genes" (can be switched to Protein.Group)
+#' @param second_id_column default "Protein.Group" (can be switched to Genes)
 #' @param exclude_samples if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
 #' @param quantity_column default "Genes.MaxLFQ.Unique", not important for MS-EmpiRe
 #' @param sum_charge how precursor charge states will be aggregated to peptide level, True means the sum will be taken, in case of false, precursor with the highest intensity will be kept, default false
 #' @param save_supplementary default TRUE, output is peptide and protein level data which can be used as a supplement
+#' @param for_msempire default TRUE so pepquantify will prepare data for MS-EmpiRe quantification, if purpose is to filter DIA-NN output and generate peptides and protein groups file set to false
 #' @param include_mod_in_pepreport default FALSE, if true includes modifications in the output peptide file (currently only Carbamidomethyl (C))
 #' @import utils dplyr stringr tidyr
 #' @importFrom magrittr %>%
@@ -32,7 +34,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
                                      experimental_library,
                                      unique_peptides_only = TRUE,
                                      Quant_Qual = 0.5,
-                                     id_column = "Genes", quantity_column = "Genes.MaxLFQ.Unique",
+                                     id_column = "Genes", second_id_column="Protein.Group", quantity_column = "Genes.MaxLFQ.Unique", for_msempire = T,
                                      sum_charge = TRUE, save_supplementary = TRUE, exclude_samples=c(), include_mod_in_pepreport = F) {
 
   stopifnot("working directory does not contain .tsv file; make sure your working directory contains main output of the DIA-NN" =
@@ -144,10 +146,31 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
       dplyr::distinct(Stripped.Sequence, Modification, .keep_all = T) %>%
       dplyr::group_by(Stripped.Sequence) %>%
       dplyr::summarize(Modification=paste(Modification,collapse=";")) %>%
-
       dplyr::ungroup()
 
   }
+
+  # get unique protein descriptions (distinct protein names for the same id_columng will be aggregated in one row separated by semicolon)
+  protein_description <- data %>%
+    dplyr::select(!!as.symbol(id_column), First.Protein.Description) %>%
+    dplyr::distinct(!!as.symbol(id_column), First.Protein.Description, .keep_all = T) %>%
+    dplyr::group_by(!!as.symbol(id_column)) %>%
+    dplyr::summarize(First.Protein.Description=paste(First.Protein.Description,collapse=";")) %>%
+    dplyr::ungroup()
+
+
+  # get unique second_id
+  second_id <- data %>%
+    dplyr::select(!!as.symbol(id_column), !!as.symbol(second_id_column)) %>%
+    dplyr::distinct(!!as.symbol(id_column), !!as.symbol(second_id_column), .keep_all = T) %>%
+    group_by(!!as.symbol(id_column)) %>%
+    dplyr::summarize(second_id =paste(!!as.symbol(second_id_column), collapse=";")) %>%
+    dplyr::ungroup()
+
+
+  # combine
+  combined_additional <- protein_description %>%
+    dplyr::left_join(second_id)
 
   # q values separately for each charge state
   precursors_data_qvalue <- data %>%
@@ -175,13 +198,15 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
     prec_uggregated <- precursors_data_modification %>%
       dplyr::left_join(precursors_data_qvalue) %>%
-      dplyr::left_join(precursors_data_charge)
+      dplyr::left_join(precursors_data_charge) %>%
+      left_join(combined_additional)
 
   }
 
   else {
     prec_uggregated <- precursors_data_qvalue %>%
-      dplyr::left_join(precursors_data_charge)
+      dplyr::left_join(precursors_data_charge) %>%
+      left_join(combined_additional)
   }
 
 
@@ -234,7 +259,8 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
   # join number of peptides and q-values
   data_pg <- data_pg %>%
-    dplyr::left_join(n_pep)
+    dplyr::left_join(n_pep) %>%
+    left_join(combined_additional)
 
 
 
@@ -246,37 +272,50 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   }
 
 
-  # prepare final matrix for MS-EmpiRe
-  data_peptide <- data_peptide %>%
-  dplyr::select(dplyr::all_of(id_column), tidyr::starts_with("Precursor.Quantity")) %>%
-  dplyr::rename(id=1) %>%
-  dplyr::mutate_all(~replace(., is.na(.), 0)) %>%
-  dplyr::mutate(unique_id = paste(id, seq(1: nrow(data_peptide)), sep = "."), .keep="all") %>%
-  dplyr::rename_all(~str_replace(.,"Precursor.Quantity_", "Intensity.")) %>%
-  dplyr::select(-dplyr::all_of(exclude_samples))
+  if (for_msempire == T) {
+
+    # prepare final matrix for MS-EmpiRe
+    data_peptide <- data_peptide %>%
+      dplyr::select(dplyr::all_of(id_column), tidyr::starts_with("Precursor.Quantity")) %>%
+      dplyr::rename(id=1) %>%
+      dplyr::mutate_all(~replace(., is.na(.), 0)) %>%
+      dplyr::mutate(unique_id = paste(id, seq(1: nrow(data_peptide)), sep = "."), .keep="all") %>%
+      dplyr::rename_all(~str_replace(.,"Precursor.Quantity_", "Intensity.")) %>%
+      dplyr::select(-dplyr::all_of(exclude_samples))
 
 
-  # write conditition file
-  Bioreplicate <- colnames(data_peptide)[! colnames(data_peptide) %in% c('id', 'unique_id')]
-  Condition    <- stringr::str_remove(Bioreplicate, "Intensity.")
-  Conditions   <- data.frame(Bioreplicate, Condition) %>%
-  write.table("conditions.txt", row.names = F, sep = "\t")
+    # write conditition file
+    Bioreplicate <- colnames(data_peptide)[! colnames(data_peptide) %in% c('id', 'unique_id')]
+    Condition    <- stringr::str_remove(Bioreplicate, "Intensity.")
+    Conditions   <- data.frame(Bioreplicate, Condition) %>%
+      write.table("conditions.txt", row.names = F, sep = "\t")
 
 
-  # print information
-  cat("conditions file was generated. First rename file as: conditions_modified.txt. afterwards,
+    # print information
+    cat("conditions file was generated. First rename file as: conditions_modified.txt. afterwards,
          modify ONLY the second column according to the experimental conditions. Do not change the column headers")
 
 
-  # store the results in the list
-  filtered_data      <- list()
-  filtered_data[[1]] <- data_peptide
-  filtered_data[[2]] <- data_pg
-  filtered_data[[3]] <- "DIA"
-  filtered_data[[4]] <- id_column
+    # store the results in the list
+    filtered_data      <- list()
+    filtered_data[[1]] <- data_peptide
+    filtered_data[[2]] <- data_pg
+    filtered_data[[3]] <- "DIA"
+    filtered_data[[4]] <- id_column
 
-  # return the filtered peptides and protein groups as well as the information about the type of experiment
-  return(filtered_data)
+    # return the filtered peptides and protein groups as well as the information about the type of experiment
+    return(filtered_data)
+
+  }
+
+  if (for_msempire == F) {
+
+    filtered_data      <- list()
+    filtered_data[[1]] <- data_peptide
+    filtered_data[[2]] <- data_pg
+    return(filtered_data)
+  }
+
 
 }
 
