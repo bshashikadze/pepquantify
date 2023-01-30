@@ -18,7 +18,6 @@
 #' @param include_mod_in_pepreport default FALSE, if true includes modifications in the output peptide file (currently only Carbamidomethyl (C))
 #' @import utils dplyr stringr tidyr
 #' @importFrom magrittr %>%
-#' @importFrom seqinr read.fasta getName
 #'
 #'
 #'
@@ -29,7 +28,8 @@
 
 
 read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
-                                     Global_PG_Q_Val = 0.01, Lib_Q_Val = 0.01,
+                                     Global_PG_Q_Val = 0.01,
+                                     Lib_Q_Val = 0.01,
                                      Lib_PG_Q_Val = 0.01,
                                      experimental_library,
                                      unique_peptides_only = TRUE,
@@ -65,7 +65,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   }
 
   # library free analysis (with mbr enabled)
-  else {
+  if (experimental_library == F) {
 
     data <- data %>%
       dplyr::filter(Q.Value         <= Q_Val) %>%
@@ -164,7 +164,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
     dplyr::select(!!as.symbol(id_column), !!as.symbol(second_id_column)) %>%
     dplyr::distinct(!!as.symbol(id_column), !!as.symbol(second_id_column), .keep_all = T) %>%
     group_by(!!as.symbol(id_column)) %>%
-    dplyr::summarize(second_id =paste(!!as.symbol(second_id_column), collapse=";")) %>%
+    dplyr::summarize(second_ids =paste(!!as.symbol(second_id_column), collapse=",")) %>%
     dplyr::ungroup()
 
 
@@ -198,21 +198,19 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
     prec_uggregated <- precursors_data_modification %>%
       dplyr::left_join(precursors_data_qvalue) %>%
-      dplyr::left_join(precursors_data_charge) %>%
-      left_join(combined_additional)
-
+      dplyr::left_join(precursors_data_charge)
   }
 
   else {
     prec_uggregated <- precursors_data_qvalue %>%
-      dplyr::left_join(precursors_data_charge) %>%
-      left_join(combined_additional)
+      dplyr::left_join(precursors_data_charge)
   }
 
 
   # add data to peptides
   data_peptide <- data_peptide %>%
-    left_join(prec_uggregated)
+    dplyr::left_join(prec_uggregated) %>%
+    dplyr::left_join(combined_additional)
 
 
 

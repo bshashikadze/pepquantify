@@ -20,5 +20,4 @@ Imports:
     tidyr,
     tibble,
     stats,
-    magrittr,
-    seqinr
+    magrittr
