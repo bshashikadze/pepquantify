@@ -123,7 +123,6 @@ if not empty, excludes specified sample/s from further analysis (only if necessa
 * unique_peptides_only: TRUE only unique peptides will be used for quantification (recommended)
 * Quant_Qual: (Quantity.Quality) refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5
 * id_column: default "Genes"
-* exclude_samples: if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
 * include_mod_in_pepreport default FALSE, if true includes modifications in the output peptide file (currently only Carbamidomethyl (C))
 * quantity_column: default "Genes.MaxLFQ.Unique", not important for MS-EmpiRe
   
