@@ -16,12 +16,12 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
 
 
   # which conditions are there
-  c_1 <- conditions %>% dplyr::select(.data$Condition) %>% dplyr::filter(stringr::str_detect(.data$Condition, "A_")) %>%
+  c_1 <- conditions %>% dplyr::select(Condition) %>% dplyr::filter(stringr::str_detect(Condition, "A_")) %>%
     dplyr::filter(dplyr::row_number()==1)  %>%
     as.character() %>%
     stringr::str_remove("A_")
-  c_2 <- conditions %>% dplyr::select(.data$Condition) %>%
-    dplyr::filter(stringr::str_detect(.data$Condition, "B_")) %>%
+  c_2 <- conditions %>% dplyr::select(Condition) %>%
+    dplyr::filter(stringr::str_detect(Condition, "B_")) %>%
     dplyr::filter(dplyr::row_number() == 1) %>%
     as.character() %>%
     stringr::str_remove("B_")
@@ -36,38 +36,38 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   # msempire data clean-up
   msempire_results <- msempire_results %>%
     dplyr::select(
-      accession          = .data$prot.id,
-      l2fc               = .data$log2FC,
-      p_value            = .data$p.val,
-      adj_p_value        = .data$p.adj) %>%
-    dplyr::mutate(l2fc = -1*.data$l2fc) %>%
+      accession          = prot.id,
+      l2fc               = log2FC,
+      p_value            = p.val,
+      adj_p_value        = p.adj) %>%
+    dplyr::mutate(l2fc = -1*l2fc) %>%
     dplyr::mutate(
       significant = dplyr::case_when(
-        .data$adj_p_value < 0.05 & abs(.data$l2fc) > log2(fc_threshold) ~ "+"),
+        adj_p_value < 0.05 & abs(l2fc) > log2(fc_threshold) ~ "+"),
       diff_abundant = dplyr::case_when(
-        .data$adj_p_value < 0.05 & .data$l2fc >  log2(fc_threshold) ~ paste0("upregulated_in_",    c_1),
-        .data$adj_p_value < 0.05 & .data$l2fc < -log2(fc_threshold) ~ paste0("downregulated_in_", c_1),
+        adj_p_value < 0.05 & l2fc >  log2(fc_threshold) ~ paste0("upregulated_in_",    c_1),
+        adj_p_value < 0.05 & l2fc < -log2(fc_threshold) ~ paste0("downregulated_in_", c_1),
         TRUE ~ "n.s."
       )) %>%
-    dplyr::arrange(.data$significant, dplyr::desc(.data$l2fc))
+    dplyr::arrange(significant, dplyr::desc(l2fc))
 
 
 
   # adds numbers of total and imputed peptides
   peptnumbers <- read.delim(data[[1]], sep = "\t", header = T) %>%
    dplyr::select(-starts_with("Intensity.")) %>%
-   dplyr::mutate(id = stringr::str_remove(.data$unique_id, "\\.[0-9]*$")) %>%
-   dplyr::select(-.data$unique_id) %>%
-   dplyr::rename(accession = .data$id)
+   dplyr::mutate(id = stringr::str_remove(unique_id, "\\.[0-9]*$")) %>%
+   dplyr::select(-unique_id) %>%
+   dplyr::rename(accession = id)
 
 
   # number of peptides for which the data was imputed (check first if they are present)
   if (ncol(peptnumbers) == 3) {
 
     n_missingpeptide <- peptnumbers %>%
-      dplyr::select(.data$accession, .data$n_ko) %>%
+      dplyr::select(accession, n_ko) %>%
       tidyr::drop_na() %>%
-      dplyr::rename(n_imputed = .data$n_ko) %>%
+      dplyr::rename(n_imputed = n_ko) %>%
       dplyr::distinct()
 
 
@@ -75,7 +75,7 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   # add information about imputed peptides to the results
     msempire_results <- msempire_results %>%
       dplyr::left_join(n_missingpeptide) %>%
-      dplyr::mutate(n_imputed = tidyr::replace_na(.data$n_imputed, 0))
+      dplyr::mutate(n_imputed = tidyr::replace_na(n_imputed, 0))
 
   }
 
@@ -83,8 +83,8 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
 
   # number of peptides with a valid values
   n_validpeptide <- peptnumbers %>%
-    dplyr::select(.data$accession, .data$n_pep) %>%
-    dplyr::rename(n_pep_total = .data$n_pep) %>%
+    dplyr::select(accession, n_pep) %>%
+    dplyr::rename(n_pep_total = n_pep) %>%
     dplyr::distinct()
 
 
@@ -93,7 +93,7 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   # add previous information
   msempire_results <- msempire_results %>%
     dplyr::left_join(n_validpeptide) %>%
-    dplyr::mutate(significant = tidyr::replace_na(.data$significant, "n.s."))
+    dplyr::mutate(significant = tidyr::replace_na(significant, "n.s."))
 
 
 

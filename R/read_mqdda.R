@@ -31,9 +31,9 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
 
   # filter by site, reverse and contaminants in the protein groups file
   data_pg <- data_pg %>%
-    dplyr::filter(.data$Potential.contaminant   != "+") %>%
-    dplyr::filter(.data$Only.identified.by.site != "+") %>%
-    dplyr::filter(.data$Reverse != "+")
+    dplyr::filter(Potential.contaminant   != "+") %>%
+    dplyr::filter(Only.identified.by.site != "+") %>%
+    dplyr::filter(Reverse != "+")
 
   # add only identified by site to peptides from the protein groups file (as they are missing there)
   data_peptide$Only.identified.by.site = data_pg$Only.identified.by.site[charmatch(data_peptide$Leading.razor.protein,
@@ -41,9 +41,9 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
 
   # filter by site, reverse and contaminants, in the peptides file
   data_peptide <- data_peptide %>%
-    dplyr::filter(.data$Potential.contaminant  != "+") %>%
-    dplyr::filter(.data$Reverse != "+") %>%
-    dplyr::filter(.data$Only.identified.by.site != "+")
+    dplyr::filter(Potential.contaminant  != "+") %>%
+    dplyr::filter(Reverse != "+") %>%
+    dplyr::filter(Only.identified.by.site != "+")
 
 
   # add protein grouping column to the peptide (from the protein groups file)
@@ -60,8 +60,8 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
   stopifnot("columns starting with Intensity. do not exist, did you set lfq to true for the labelled data?" = any(grepl("Intensity.", colnames(data_peptide))))
 
      data_peptide <- data_peptide %>%
-      dplyr::mutate(unique_id = paste(.data$id, seq(1: nrow(data_peptide)), sep = "."), .keep= "all") %>%
-      dplyr::select(.data$id, .data$unique_id, starts_with("Intensity.")) %>%
+      dplyr::mutate(unique_id = paste(id, seq(1: nrow(data_peptide)), sep = "."), .keep= "all") %>%
+      dplyr::select(id, unique_id, starts_with("Intensity.")) %>%
       dplyr::select(-all_of(exclude_samples))
 
   }
@@ -73,7 +73,7 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
 
      data_peptide <- data_peptide %>%
       dplyr::mutate(unique_id = paste(id, seq(1: nrow(data_peptide)), sep = "."), .keep="all") %>%
-      dplyr::select(.data$id, .data$unique_id, starts_with("Reporter.intensity.corrected.")) %>%
+      dplyr::select(id, unique_id, starts_with("Reporter.intensity.corrected.")) %>%
       dplyr::select(-all_of(exclude_samples))
 
   # for convention Reporter.intensity.corrected will be replaced by Intensity.

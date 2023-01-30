@@ -13,6 +13,7 @@
 #' @param quantity_column default "Genes.MaxLFQ.Unique", not important for MS-EmpiRe
 #' @param sum_charge how precursor charge states will be aggregated to peptide level, True means the sum will be taken, in case of false, precursor with the highest intensity will be kept, default false
 #' @param save_supplementary default TRUE, output is peptide and protein level data which can be used as a supplement
+#' @param include_mod_in_pepreport default FALSE, if true includes modifications in the output peptide file (currently only Carbamidomethyl (C))
 #' @import utils dplyr stringr tidyr
 #' @importFrom magrittr %>%
 #' @importFrom seqinr read.fasta getName
@@ -32,7 +33,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
                                      unique_peptides_only = TRUE,
                                      Quant_Qual = 0.5,
                                      id_column = "Genes", quantity_column = "Genes.MaxLFQ.Unique",
-                                     sum_charge = TRUE, save_supplementary = TRUE, exclude_samples=c()) {
+                                     sum_charge = TRUE, save_supplementary = TRUE, exclude_samples=c(), include_mod_in_pepreport = F) {
 
   stopifnot("working directory does not contain .tsv file; make sure your working directory contains main output of the DIA-NN" =
               any(stringr::str_ends(list.files(getwd()), ".tsv")))
@@ -42,8 +43,8 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # find the dia nn main output (naivly assumed that the largest file with extension .tsv is the one)
   raw_diann_path <- data.frame(list.files(getwd()), file.size(list.files(getwd()))) %>%
     dplyr::rename(files = 1, size = 2) %>%
-    dplyr::filter(stringr::str_ends(.data$files, ".tsv") & .data$size == max(.data$size, na.rm = T)) %>%
-    dplyr::select(.data$files) %>%
+    dplyr::filter(stringr::str_ends(files, ".tsv") & size == max(size, na.rm = T)) %>%
+    dplyr::select(files) %>%
     as.character()
 
 
@@ -55,9 +56,9 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   if (experimental_library == T) {
 
     data <- data %>%
-    dplyr::filter(.data$Q.Value           <= Q_Val) %>%
-    dplyr::filter(.data$Global.Q.Value    <= Global_Q_Val) %>%
-    dplyr::filter(.data$Global.PG.Q.Value <= Global_PG_Q_Val)
+    dplyr::filter(Q.Value           <= Q_Val) %>%
+    dplyr::filter(Global.Q.Value    <= Global_Q_Val) %>%
+    dplyr::filter(Global.PG.Q.Value <= Global_PG_Q_Val)
 
   }
 
@@ -65,9 +66,9 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   else {
 
     data <- data %>%
-      dplyr::filter(.data$Q.Value         <= Q_Val) %>%
-      dplyr::filter(.data$Lib.Q.Value     <= Lib_Q_Val) %>%
-      dplyr::filter(.data$Lib.PG.Q.Value  <= Lib_PG_Q_Val)
+      dplyr::filter(Q.Value         <= Q_Val) %>%
+      dplyr::filter(Lib.Q.Value     <= Lib_Q_Val) %>%
+      dplyr::filter(Lib.PG.Q.Value  <= Lib_PG_Q_Val)
 
 
   }
@@ -82,8 +83,8 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   else {unique <- 0}
 
   data <- data %>%
-    dplyr::filter(.data$Proteotypic      >= unique) %>%
-    dplyr::filter(.data$Quantity.Quality >= Quant_Qual)
+    dplyr::filter(Proteotypic      >= unique) %>%
+    dplyr::filter(Quantity.Quality >= Quant_Qual)
 
 
   # save filtered data
@@ -107,7 +108,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
     # summerise charge states by taking the sum
     data_peptide <- data_peptide %>%
-      dplyr::group_by(.data$Run, .data$Stripped.Sequence, !!as.symbol(id_column)) %>%
+      dplyr::group_by(Run, Stripped.Sequence, !!as.symbol(id_column)) %>%
       dplyr::summarise_all(sum, na.rm = TRUE) %>%
       dplyr::ungroup()
 
@@ -117,9 +118,9 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
     # aggregate charge states by taking the precursor with the highest intensity
     data_peptide <- data_peptide %>%
-      dplyr::group_by(.data$Run, .data$Stripped.Sequence, !!as.symbol(id_column)) %>%
-      dplyr::summarise(Precursor.Quantity   = max(.data$Precursor.Quantity),
-                       Precursor.Normalised = max(.data$Precursor.Normalised)) %>%
+      dplyr::group_by(Run, Stripped.Sequence, !!as.symbol(id_column)) %>%
+      dplyr::summarise(Precursor.Quantity   = max(Precursor.Quantity),
+                       Precursor.Normalised = max(Precursor.Normalised)) %>%
       dplyr::ungroup()
 
   }
@@ -131,16 +132,63 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
                        c(dplyr::all_of(id_column), "Stripped.Sequence"))
 
 
+  # match other data (charge, modifications, q-values)
+  if (include_mod_in_pepreport == T) {
 
-  data_peptide$peptide_Q_Val <- data$Global.Q.Value[match(data_peptide[[id_column]], data[[id_column]])]
+    print("in the peptide output modifications will be included (so far (v.2.1) only works for Carbamidomethyl(C))")
+
+    precursors_data_modification <- data %>%
+      dplyr::select(Modified.Sequence, Stripped.Sequence) %>%
+      dplyr::mutate(Modification = str_extract_all(Modified.Sequence,"(?<=\\().+(?=\\))")) %>%
+      dplyr::mutate(Modification = case_when(mod == "UniMod:4" ~ "Carbamidomethyl (C)", TRUE ~ "")) %>%
+      dplyr::distinct(Stripped.Sequence, Modification, .keep_all = T) %>%
+      dplyr::group_by(Stripped.Sequence) %>%
+      dplyr::summarize(Modification=paste(Modification,collapse=";")) %>%
+
+      dplyr::ungroup()
+
+  }
+
+  # q values separately for each charge state
+  precursors_data_qvalue <- data %>%
+    dplyr::select(Modified.Sequence, Stripped.Sequence, Global.Q.Value) %>%
+    dplyr::distinct(Stripped.Sequence, Global.Q.Value, .keep_all = T) %>%
+    dplyr::group_by(Stripped.Sequence) %>%
+    dplyr::summarize(Global.Q.Value=paste(Global.Q.Value,collapse=";")) %>%
+    dplyr::rename(Q.value = Global.Q.Value) %>%
+    ungroup()
 
 
+  # charges
+  precursors_data_charge <- data %>%
+    dplyr::select(Modified.Sequence, Stripped.Sequence, Precursor.Charge) %>%
+    dplyr::mutate(Precursor.Charge = str_c("+", Precursor.Charge)) %>%
+    dplyr::distinct(Stripped.Sequence, Precursor.Charge, .keep_all = T) %>%
+    dplyr::group_by(Stripped.Sequence) %>%
+    dplyr::summarize(Precursor.Charge=paste(Precursor.Charge,collapse=";")) %>%
+    dplyr::rename(Charge = Precursor.Charge) %>%
+    dplyr::ungroup()
 
-  # re-order
+
+  # aggregate data
+  if (include_mod_in_pepreport == T) {
+
+    prec_uggregated <- precursors_data_modification %>%
+      dplyr::left_join(precursors_data_qvalue) %>%
+      dplyr::left_join(precursors_data_charge)
+
+  }
+
+  else {
+    prec_uggregated <- precursors_data_qvalue %>%
+      dplyr::left_join(precursors_data_charge)
+  }
+
+
+  # add data to peptides
   data_peptide <- data_peptide %>%
-    dplyr::select(dplyr::all_of(id_column), .data$Stripped.Sequence,
-                  starts_with("Precursor.Quantity"), starts_with("Precursor.Quantity"),
-                  starts_with("Precursor.Normalised"), .data$peptide_Q_Val)
+    left_join(prec_uggregated)
+
 
 
   # remove entries without gene names
@@ -161,16 +209,16 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
   # protein level data
   data_pg <- data_filtered %>%
-    dplyr::select(.data$Run, dplyr::all_of(id_column), dplyr::all_of(quantity_column)) %>%
-    dplyr::distinct(.data$Run, !!as.symbol(id_column), .keep_all = T) %>%
-    dplyr::mutate(Run = stringr::str_c("LFQ.intensity_", .data$Run)) %>%
+    dplyr::select(Run, dplyr::all_of(id_column), dplyr::all_of(quantity_column)) %>%
+    dplyr::distinct(Run, !!as.symbol(id_column), .keep_all = T) %>%
+    dplyr::mutate(Run = stringr::str_c("LFQ.intensity_", Run)) %>%
     tidyr::pivot_wider(names_from = "Run", values_from = dplyr::all_of(quantity_column), dplyr::all_of(id_column))
 
 
   # count number of peptides
   n_pep <- data_peptide %>%
     dplyr::group_by(!!as.symbol(id_column)) %>%
-    dplyr::summarise(n_pep = dplyr::n_distinct(.data$Stripped.Sequence))
+    dplyr::summarise(n_pep = dplyr::n_distinct(Stripped.Sequence))
 
 
   # match other columns
@@ -203,7 +251,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   dplyr::select(dplyr::all_of(id_column), tidyr::starts_with("Precursor.Quantity")) %>%
   dplyr::rename(id=1) %>%
   dplyr::mutate_all(~replace(., is.na(.), 0)) %>%
-  dplyr::mutate(unique_id = paste(.data$id, seq(1: nrow(data_peptide)), sep = "."), .keep="all") %>%
+  dplyr::mutate(unique_id = paste(id, seq(1: nrow(data_peptide)), sep = "."), .keep="all") %>%
   dplyr::rename_all(~str_replace(.,"Precursor.Quantity_", "Intensity.")) %>%
   dplyr::select(-dplyr::all_of(exclude_samples))
 

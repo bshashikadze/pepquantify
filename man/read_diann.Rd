@@ -17,7 +17,8 @@ read_diann(
   quantity_column = "Genes.MaxLFQ.Unique",
   sum_charge = TRUE,
   save_supplementary = TRUE,
-  exclude_samples = c()
+  exclude_samples = c(),
+  include_mod_in_pepreport = F
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ read_diann(
 \item{save_supplementary}{default TRUE, output is peptide and protein level data which can be used as a supplement}
 
 \item{exclude_samples}{if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)}
+
+\item{include_mod_in_pepreport}{default FALSE, if true includes modifications in the output peptide file (currently only Carbamidomethyl (C))}
 }
 \value{
 The list of three elements, the first is the filtered peptides file, the second is the filtered protein groups file and the last is the character that stores the type of experiment

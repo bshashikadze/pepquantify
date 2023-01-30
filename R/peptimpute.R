@@ -27,13 +27,13 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
   #drawn
   valid_data_descriptives <- data[[2]] %>%
     tibble::rownames_to_column("unique_id") %>%
-    tidyr::pivot_longer(names_to = "Bioreplicate", values_to = "Intensity", -.data$unique_id) %>%
-    dplyr::group_by(.data$Bioreplicate) %>%
-    dplyr::summarise(mean_valid = mean(.data$Intensity, na.rm = T),
-              median_valid = median(.data$Intensity, na.rm = T),
-              sd_valid     = sd(.data$Intensity,   na.rm = T),
-              n_valid      = sum(!is.na(.data$Intensity)),
-              n_missing    = nrow(data[[1]]) - .data$n_valid) %>%
+    tidyr::pivot_longer(names_to = "Bioreplicate", values_to = "Intensity", -unique_id) %>%
+    dplyr::group_by(Bioreplicate) %>%
+    dplyr::summarise(mean_valid = mean(Intensity, na.rm = T),
+              median_valid = median(Intensity, na.rm = T),
+              sd_valid     = sd(Intensity,   na.rm = T),
+              n_valid      = sum(!is.na(Intensity)),
+              n_missing    = nrow(data[[1]]) - n_valid) %>%
     dplyr::ungroup()
 
 
@@ -89,27 +89,27 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
     dplyr::left_join(data[[1]]) %>%
     dplyr::filter(!!as.symbol(condition1)  >= fraction_valid * length_cond_1  & !!as.symbol(condition2)  <= second_condition
            |!!as.symbol(condition1) <=  second_condition & !! as.symbol(condition2) >= fraction_valid * length_cond_2) %>%
-    dplyr::select(.data$id, .data$unique_id, starts_with("Intensity.")) %>%
+    dplyr::select(id, unique_id, starts_with("Intensity.")) %>%
     dplyr::mutate_if(is.numeric, ~2^(.)) %>%
-    dplyr::group_by(.data$id) %>%
+    dplyr::group_by(id) %>%
     dplyr::mutate(n_ko = dplyr::n()) %>%
-    dplyr::filter(.data$n_ko >= n_ko_like) %>%
+    dplyr::filter(n_ko >= n_ko_like) %>%
     dplyr::ungroup()
 
 
 
   # this is unimputed matrix which contains potentially msempire quantifiable peptides
   peptides_for_msempire_min_2_pep <- data[[3]] %>%
-    dplyr::group_by(.data$id) %>%
+    dplyr::group_by(id) %>%
     dplyr::mutate(n_pep = dplyr::n()) %>%
-    dplyr::filter(.data$n_pep >= data[[6]]) %>%
+    dplyr::filter(n_pep >= data[[6]]) %>%
     dplyr::ungroup()
 
 
 
   # detect peptides in imputed matrix that can anyway be quantified by msempire so are not necessary to include
   imputed_matrix <- imputed_matrix %>%
-    dplyr::filter(!.data$id %in% peptides_for_msempire_min_2_pep$id)
+    dplyr::filter(!id %in% peptides_for_msempire_min_2_pep$id)
 
 
   # print information about imputed peptides
@@ -123,11 +123,11 @@ peptimpute <- function(data, downshift = 1.8, width = 0.3, n_ko_like = 2, fracti
   # add imputed peptides (if any)
     peptides_for_msempire <- data[[3]] %>%
       dplyr::bind_rows(imputed_matrix) %>%
-      dplyr::group_by(.data$id) %>%
+      dplyr::group_by(id) %>%
       dplyr::mutate(n_pep = dplyr::n()) %>%
       dplyr::ungroup() %>%
-      dplyr::filter(.data$n_pep >= data[[6]]) %>%
-      dplyr::select(-.data$id) %>%
+      dplyr::filter(n_pep >= data[[6]]) %>%
+      dplyr::select(-id) %>%
       write.table(paste0(condition1, "_vs_", condition2, "/peptidesformsempire.txt"), sep = "\t", row.names = F)
 
 }
