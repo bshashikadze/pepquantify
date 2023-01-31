@@ -137,7 +137,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # match other data (charge, modifications, q-values)
   if (include_mod_in_pepreport == T) {
 
-    print("in the peptide output modifications will be included (so far (v.2.1) only works for Carbamidomethyl(C))")
+    print("in the peptide output modifications will be included (so far (v.2.1.2) only works for Carbamidomethyl(C))")
 
     precursors_data_modification <- data %>%
       dplyr::select(Modified.Sequence, Stripped.Sequence) %>%
@@ -247,8 +247,20 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
     dplyr::summarise(n_pep = dplyr::n_distinct(Stripped.Sequence))
 
 
-  # match other columns
-  n_pep$pg_Q_Val    <- data$Global.PG.Q.Value[match(n_pep[[id_column]], data[[id_column]])]
+  # match q values
+  if (experimental_library == T) {
+
+    n_pep$pg_Q_Val    <- data$Global.PG.Q.Value[match(n_pep[[id_column]], data[[id_column]])]
+
+  }
+
+
+  if (experimental_library == F) {
+
+    n_pep$pg_Q_Val    <- data$Lib.PG.Q.Value[match(n_pep[[id_column]], data[[id_column]])]
+
+  }
+
 
 
   # remove entries without gene names

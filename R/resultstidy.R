@@ -82,8 +82,6 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   # replace NA with 0
   msempire_results["n_imputed"][is.na(msempire_results["n_imputed"])] <- 0
 
-
-
   }
 
 
