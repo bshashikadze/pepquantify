@@ -172,13 +172,23 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   combined_additional <- protein_description %>%
     dplyr::left_join(second_id)
 
-  # q values separately for each charge state
+  # q values separately for each charge state (experimental library based)
   precursors_data_qvalue <- data %>%
     dplyr::select(Modified.Sequence, Stripped.Sequence, Global.Q.Value) %>%
     dplyr::distinct(Stripped.Sequence, Global.Q.Value, .keep_all = T) %>%
     dplyr::group_by(Stripped.Sequence) %>%
     dplyr::summarize(Global.Q.Value=paste(Global.Q.Value,collapse=";")) %>%
     dplyr::rename(Q.value = Global.Q.Value) %>%
+    ungroup()
+
+
+  # q values separately for each charge state (lib free mbr enabled)
+  precursors_data_qvalue_mbr <- data %>%
+    dplyr::select(Modified.Sequence, Stripped.Sequence, Lib.Q.Value) %>%
+    dplyr::distinct(Stripped.Sequence, Lib.Q.Value, .keep_all = T) %>%
+    dplyr::group_by(Stripped.Sequence) %>%
+    dplyr::summarize(Lib.Q.Value=paste(Lib.Q.Value,collapse=";")) %>%
+    dplyr::rename(Q.value = Lib.Q.Value) %>%
     ungroup()
 
 
@@ -193,19 +203,34 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
     dplyr::ungroup()
 
 
-  # aggregate data
+  # include q values
+  if (experimental_library == T) {
+
+    prec_uggregated <- precursors_data_qvalue %>%
+      dplyr::left_join(precursors_data_charge)
+
+  }
+
+
+  if (experimental_library == F) {
+
+    prec_uggregated <- precursors_data_qvalue_mbr %>%
+      dplyr::left_join(precursors_data_charge)
+
+  }
+
+
+  # include modification
   if (include_mod_in_pepreport == T) {
 
-      prec_uggregated <- precursors_data_modification %>%
-      dplyr::left_join(precursors_data_qvalue) %>%
-      dplyr::left_join(precursors_data_charge)
+   prec_uggregated <- prec_uggregated %>%
+      dplyr::left_join(precursors_data_modification)
 
       }
 
   else {
 
-     prec_uggregated <- precursors_data_qvalue %>%
-      dplyr::left_join(precursors_data_charge)
+      prec_uggregated <- prec_uggregated
   }
 
 
