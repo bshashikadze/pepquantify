@@ -45,8 +45,8 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
       significant = dplyr::case_when(
         adj_p_value < 0.05 & abs(l2fc) > log2(fc_threshold) ~ "+"),
       diff_abundant = dplyr::case_when(
-        adj_p_value < 0.05 & l2fc >  log2(fc_threshold) ~ paste0("upregulated_in_",    c_1),
-        adj_p_value < 0.05 & l2fc < -log2(fc_threshold) ~ paste0("downregulated_in_", c_1),
+        adj_p_value < 0.05 & l2fc >  log2(fc_threshold) ~ paste0("increased_in_",    c_1),
+        adj_p_value < 0.05 & l2fc < -log2(fc_threshold) ~ paste0("decreased_in_", c_1),
         TRUE ~ "n.s."
       )) %>%
     dplyr::arrange(significant, dplyr::desc(l2fc))
@@ -61,6 +61,7 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
    dplyr::rename(accession = id)
 
 
+
   # number of peptides for which the data was imputed (check first if they are present)
   if (ncol(peptnumbers) == 3) {
 
@@ -73,12 +74,17 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
 
 
   # add information about imputed peptides to the results
-    msempire_results <- msempire_results %>%
-      dplyr::left_join(n_missingpeptide) %>%
-      dplyr::mutate(n_imputed = tidyr::replace_na(n_imputed, 0))
+  msempire_results <- msempire_results %>%
+      dplyr::left_join(n_missingpeptide)
+
+
+
+  # replace NA with 0
+  msempire_results["n_imputed"][is.na(msempire_results["n_imputed"])] <- 0
+
+
 
   }
-
 
 
   # number of peptides with a valid values
@@ -86,8 +92,6 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
     dplyr::select(accession, n_pep) %>%
     dplyr::rename(n_pep_total = n_pep) %>%
     dplyr::distinct()
-
-
 
 
   # add previous information
@@ -109,12 +113,10 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   write.table(msempire_results, paste0(data[[3]], "/msempire_results_tidy.txt"), sep = "\t", row.names = F)
 
 
-
   # save the results that can be used to plot the volcano plot
   msempire_results_volcano <- msempire_results %>%
     dplyr::select(1:6) %>%
     dplyr::mutate_all(~dplyr::na_if(., 0))
-
 
 
   #replace P values having value of 1 with with the highest value which is not 1 (this is to properly logarithmize)
@@ -126,13 +128,11 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   write.table(msempire_results_volcano, paste0(data[[3]], "/msempire_results_tidy_volcano.txt"), sep = "\t", row.names = F)
 
 
-
-
   # print the information
-cat("three files were saved in the working directory:
+  cat("three files were saved in the working directory:
     1 - msempire_results_raw:     this is the raw results of MS-EmpiRe
     2 - msempire_results_tidy:    this is the results that has been cleaned-up and can be used in suppl tables
-    3 - msempire_results_volcano: some columns was adjusted to make it suitable for the volcano plot")
+    3 - msempire_results_volcano: some columns were adjusted to make it suitable for the volcano plot")
 }
 
 

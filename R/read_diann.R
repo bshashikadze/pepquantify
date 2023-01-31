@@ -150,7 +150,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
   }
 
-  # get unique protein descriptions (distinct protein names for the same id_columng will be aggregated in one row separated by semicolon)
+  # get unique protein descriptions (distinct protein names for the same id_column will be aggregated in one row separated by semicolon)
   protein_description <- data %>%
     dplyr::select(!!as.symbol(id_column), First.Protein.Description) %>%
     dplyr::distinct(!!as.symbol(id_column), First.Protein.Description, .keep_all = T) %>%
@@ -199,10 +199,12 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
       prec_uggregated <- precursors_data_modification %>%
       dplyr::left_join(precursors_data_qvalue) %>%
       dplyr::left_join(precursors_data_charge)
-  }
+
+      }
 
   else {
-    prec_uggregated <- precursors_data_qvalue %>%
+
+     prec_uggregated <- precursors_data_qvalue %>%
       dplyr::left_join(precursors_data_charge)
   }
 
@@ -210,7 +212,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # add data to peptides
   data_peptide <- data_peptide %>%
     dplyr::left_join(prec_uggregated) %>%
-    dplyr::left_join(data %>% dplyr::select(Stripped.Sequence, !!as.symbol(second_id_column)) %>%
+    dplyr::left_join(data %>% dplyr::select(Stripped.Sequence, First.Protein.Description, !!as.symbol(second_id_column)) %>%
                        dplyr::distinct(Stripped.Sequence, !!as.symbol(second_id_column), .keep_all = T))
 
 
