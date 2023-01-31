@@ -6,7 +6,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-pepquantify (v2.1.1) takes the peptide level output of the proteomics dataset and
+pepquantify (v2.1.2) takes the peptide level output of the proteomics dataset and
 proposes various options to pre-filter and clean up the data and prepare
 for further analysis with an ‘MS-EmpiRe’ package. Also,
 ‘pepquantify’ can perform missing value imputation with user-defined
