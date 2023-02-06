@@ -243,7 +243,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
 
   # remove entries without gene names
-  if ("Genes" %in% colnames(data_peptide)) {
+  if ("Genes" == colnames(data_peptide)[1]) {
 
     data_peptide      <- data_peptide[data_peptide$Genes != "", ]
 
@@ -289,11 +289,12 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
 
   # remove entries without gene names
-  if ("Genes" %in% colnames(data_peptide)) {
+  if ("Genes" == colnames(data_pg)[1]) {
 
     data_pg      <- data_pg[data_pg$Genes != "", ]
 
   }
+
 
   # join number of peptides and q-values
   data_pg <- data_pg %>%
