@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_diann.R
 \name{read_diann}
 \alias{read_diann}
-\title{Read and filter the DIA quantification data produced by the DIA-NN}
+\title{Read and filter DIA precursor-level data produced by the DIA-NN}
 \usage{
 read_diann(
   Q_Val = 0.01,
@@ -13,6 +13,8 @@ read_diann(
   experimental_library,
   unique_peptides_only = TRUE,
   Quant_Qual = 0.5,
+  diann_file_name = "",
+  directory = ".",
   id_column = "Genes",
   second_id_column = "Protein.Group",
   quantity_column = "Genes.MaxLFQ.Unique",
@@ -40,6 +42,10 @@ read_diann(
 
 \item{Quant_Qual}{refer to https://github.com/vdemichev/DiaNN; pepquantify by default sets it to 0.5}
 
+\item{diann_file_name}{by default function will assume that largest .tsv file is the DIA-output, however specific file name can be specified diann_file_name=filename.tsv}
+
+\item{directory}{default is a current directory}
+
 \item{id_column}{default "Genes" (can be switched to Protein.Group)}
 
 \item{second_id_column}{default "Protein.Group" (can be switched to Genes)}
@@ -60,7 +66,7 @@ read_diann(
 The list of three elements, the first is the filtered peptides file, the second is the filtered protein groups file and the last is the character that stores the type of experiment
 }
 \description{
-Read and filter the DIA quantification data produced by the DIA-NN
+Read and filter DIA precursor-level data produced by the DIA-NN
 }
 \examples{
 read_diann(exclude_samples=c("samplename"), experimental_library = TRUE)

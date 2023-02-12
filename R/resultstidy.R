@@ -108,7 +108,7 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
 
 
   # save the tidy results
-  write.table(msempire_results, paste0(data[[3]], "/msempire_results_tidy.txt"), sep = "\t", row.names = F)
+  write.table(msempire_results, paste0(data[[3]], "/msempire_results_tidy.txt"), sep = "\t", row.names = F, quote = F)
 
 
   # save the results that can be used to plot the volcano plot
@@ -123,7 +123,7 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   msempire_results_volcano$log10p[is.na(msempire_results_volcano$log10p)] <- max(msempire_results_volcano$log10p, na.rm = T)
   msempire_results_volcano$log10p[msempire_results_volcano$log10p == 0] <- NA
   msempire_results_volcano$log10p[is.na(msempire_results_volcano$log10p)] <-  min(msempire_results_volcano$log10p, na.rm = T)
-  write.table(msempire_results_volcano, paste0(data[[3]], "/msempire_results_tidy_volcano.txt"), sep = "\t", row.names = F)
+  write.table(msempire_results_volcano, paste0(data[[3]], "/msempire_results_tidy_volcano.txt"), sep = "\t", row.names = F, quote = F)
 
 
   # print the information

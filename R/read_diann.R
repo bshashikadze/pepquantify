@@ -1,4 +1,4 @@
-#' Read and filter the DIA quantification data produced by the DIA-NN
+#' Read and filter DIA precursor-level data produced by the DIA-NN
 #'
 #' @param Q_Val refer to https://github.com/vdemichev/DiaNN
 #' @param Global_Q_Val refer to https://github.com/vdemichev/DiaNN
@@ -12,6 +12,8 @@
 #' @param second_id_column default "Protein.Group" (can be switched to Genes)
 #' @param exclude_samples if not empty, excludes specified sample/s from further analysis (only if necessary, e.g. after inspecting PCA)
 #' @param quantity_column default "Genes.MaxLFQ.Unique", not important for MS-EmpiRe
+#' @param diann_file_name by default function will assume that largest .tsv file is the DIA-output, however specific file name can be specified diann_file_name=filename.tsv
+#' @param directory default is a current directory
 #' @param sum_charge how precursor charge states will be aggregated to peptide level, True means the sum will be taken, in case of false, precursor with the highest intensity will be kept, default false
 #' @param save_supplementary default TRUE, output is peptide and protein level data which can be used as a supplement
 #' @param for_msempire default TRUE so pepquantify will prepare data for MS-EmpiRe quantification, if purpose is to filter DIA-NN output and generate peptides and protein groups file set to false
@@ -33,25 +35,51 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
                                      Lib_PG_Q_Val = 0.01,
                                      experimental_library,
                                      unique_peptides_only = TRUE,
-                                     Quant_Qual = 0.5,
+                                     Quant_Qual = 0.5, diann_file_name = "", directory = ".",
                                      id_column = "Genes", second_id_column="Protein.Group", quantity_column = "Genes.MaxLFQ.Unique", for_msempire = T,
                                      sum_charge = TRUE, save_supplementary = TRUE, exclude_samples=c(), include_mod_in_pepreport = F) {
 
-  stopifnot("working directory does not contain .tsv file; make sure your working directory contains main output of the DIA-NN" =
-              any(stringr::str_ends(list.files(getwd()), ".tsv")))
+  # set working directory
+  setwd(directory)
+  print(paste0("R is located in ", getwd(), ", if this path is wrong, change from R studio, or by specifing exact path using the command directory e.g. directory = name_of_the_path"))
 
 
+  # read main output of DIA-NN (if dia_nn_file name is not specified largest .tsv file will be loaded)
+  if (nchar(diann_file_name) == 0) {
 
-  # find the dia nn main output (naivly assumed that the largest file with extension .tsv is the one)
-  raw_diann_path <- data.frame(list.files(getwd()), file.size(list.files(getwd()))) %>%
-    dplyr::rename(files = 1, size = 2) %>%
-    dplyr::filter(stringr::str_ends(files, ".tsv") & size == max(size, na.rm = T)) %>%
-    dplyr::select(files) %>%
-    as.character()
+    stopifnot("working directory does not contain .tsv file; make sure working directory (printed above) is correct;
+              make sure your working directory contains main output of the DIA-NN or consider explicit reading using diann_file_name" =
+                any(stringr::str_ends(list.files(getwd()), ".tsv")))
 
 
-  # read the DIA-NN output
-  data <- read.delim(raw_diann_path, header = T, sep = "\t")
+    # find the dia nn main output (naivly assumed that the largest file with extension .tsv is the one)
+    raw_diann_path <- data.frame(list.files(getwd()), file.size(list.files(getwd()))) %>%
+      dplyr::rename(files = 1, size = 2) %>%
+      dplyr::filter(stringr::str_ends(files, ".tsv") & size == max(size, na.rm = T)) %>%
+      dplyr::select(files) %>%
+      as.character()
+
+
+    # read the DIA-NN output
+    print(paste0("File, with the name ", raw_diann_path, " is currently loading"))
+    data <- read.delim(raw_diann_path, header = T, sep = "\t")
+
+
+  }
+
+  if (nchar(diann_file_name) > 0) {
+
+    # stop if specified file does not exist in the directory
+    stopifnot("such file does not exist in the working directory, make sure to type exact file name with an extension e.g. diann_file_name=myfilename.tsv" =
+                any(stringr::str_detect(list.files(getwd()), diann_file_name)))
+
+
+    # read the DIA-NN output
+    print(paste0("File, with the name ", diann_file_name, " is currently loading"))
+    data <- read.delim(diann_file_name, header = T, sep = "\t")
+
+
+  }
 
 
   # experimental library based analysis (e.g. GPF)
@@ -179,7 +207,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
     dplyr::group_by(Stripped.Sequence) %>%
     dplyr::summarize(Global.Q.Value=paste(Global.Q.Value,collapse=";")) %>%
     dplyr::rename(Q.value = Global.Q.Value) %>%
-    ungroup()
+    dplyr::ungroup()
 
 
   # q values separately for each charge state (lib free mbr enabled)
@@ -189,7 +217,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
     dplyr::group_by(Stripped.Sequence) %>%
     dplyr::summarize(Lib.Q.Value=paste(Lib.Q.Value,collapse=";")) %>%
     dplyr::rename(Q.value = Lib.Q.Value) %>%
-    ungroup()
+    dplyr::ungroup()
 
 
   # charges
@@ -253,7 +281,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # write results
   if (save_supplementary == TRUE) {
 
-    write.table(data_peptide, "peptides.txt", row.names = F, sep = "\t")
+    write.table(data_peptide, "peptides.txt", row.names = F, sep = "\t", quote = F)
 
   }
 
@@ -299,14 +327,14 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # join number of peptides and q-values
   data_pg <- data_pg %>%
     dplyr::left_join(n_pep) %>%
-    left_join(combined_additional)
+    dplyr::left_join(combined_additional)
 
 
 
   # write results
   if (save_supplementary == TRUE) {
 
-    write.table(data_pg, "proteingroups.txt", row.names = F, sep = "\t")
+    write.table(data_pg, "proteingroups.txt", row.names = F, sep = "\t", quote = F)
 
   }
 
