@@ -57,8 +57,8 @@ read_diann <- function(Q_Val = 0.01,
   # read main output of DIA-NN (if dia_nn_file name is not specified largest .tsv file will be loaded)
   if (!grepl(pattern = '.tsv|.txt|.csv', diann_file_name)) {
 
-    stopifnot("working directory does not contain .tsv file; make sure working directory (printed above) is correct;
-              make sure your working directory contains the main output of the DIA-NN or consider explicit reading using diann_file_name" =
+    stopifnot("pepquantify attempted to automatically read DIA-NN main output but working directory does not seem to contain .tsv file; make sure working directory (printed above) is correct;
+              also consider explicit reading using: diann_file_name = filename.extension" =
                 any(stringr::str_ends(list.files(getwd()), ".tsv")))
 
 
