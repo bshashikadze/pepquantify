@@ -29,26 +29,36 @@
 #' @examples read_diann(exclude_samples=c("samplename"), experimental_library = TRUE)
 
 
-read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
-                                     Global_PG_Q_Val = 0.01,
-                                     Lib_Q_Val = 0.01,
-                                     Lib_PG_Q_Val = 0.01,
-                                     experimental_library,
-                                     unique_peptides_only = TRUE,
-                                     Quant_Qual = 0.5, diann_file_name = "", directory = ".",
-                                     id_column = "Genes", second_id_column="Protein.Group", quantity_column = "Genes.MaxLFQ.Unique", for_msempire = T,
-                                     sum_charge = TRUE, save_supplementary = TRUE, exclude_samples=c(), include_mod_in_pepreport = F) {
+read_diann <- function(Q_Val = 0.01,
+                       Global_Q_Val             = 0.01,
+                       Global_PG_Q_Val          = 0.01,
+                       Lib_Q_Val                = 0.01,
+                       Lib_PG_Q_Val             = 0.01,
+                       experimental_library,
+                       unique_peptides_only     = TRUE,
+                       Quant_Qual               = 0.5,
+                       diann_file_name          = "",
+                       directory                = ".",
+                       id_column                = "Genes",
+                       second_id_column         ="Protein.Group",
+                       quantity_column          = "Genes.MaxLFQ.Unique",
+                       for_msempire             = T,
+                       sum_charge               = TRUE,
+                       save_supplementary       = TRUE,
+                       exclude_samples          = c(),
+                       include_mod_in_pepreport = F) {
+
 
   # set working directory
   setwd(directory)
-  print(paste0("R is located in ", getwd(), ", if this path is wrong, change from R studio, or by specifing exact path using the command directory e.g. directory = name_of_the_path"))
+  print(paste0("R is located in ", getwd(), ", if this path is wrong, change it from R studio, or by specifying the correct path using the directory command e.g. directory = name_of_the_path"))
 
 
   # read main output of DIA-NN (if dia_nn_file name is not specified largest .tsv file will be loaded)
-  if (nchar(diann_file_name) == 0) {
+  if (!grepl(pattern = '.tsv|.txt|.csv', diann_file_name)) {
 
     stopifnot("working directory does not contain .tsv file; make sure working directory (printed above) is correct;
-              make sure your working directory contains main output of the DIA-NN or consider explicit reading using diann_file_name" =
+              make sure your working directory contains the main output of the DIA-NN or consider explicit reading using diann_file_name" =
                 any(stringr::str_ends(list.files(getwd()), ".tsv")))
 
 
@@ -61,21 +71,21 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
 
 
     # read the DIA-NN output
-    print(paste0("File, with the name ", raw_diann_path, " is currently loading"))
+    print(paste0("file, with the name ", raw_diann_path, " is currently loading"))
     data <- read.delim(raw_diann_path, header = T, sep = "\t")
 
 
   }
 
-  if (nchar(diann_file_name) > 0) {
+  if (grepl(pattern = '.tsv|.txt|.csv', diann_file_name)) {
 
     # stop if specified file does not exist in the directory
-    stopifnot("such file does not exist in the working directory, make sure to type exact file name with an extension e.g. diann_file_name=myfilename.tsv" =
+    stopifnot("such file does not exist in the working directory, make sure to type the exact file name with an extension e.g. diann_file_name=myfilename.tsv" =
                 any(stringr::str_detect(list.files(getwd()), diann_file_name)))
 
 
     # read the DIA-NN output
-    print(paste0("File, with the name ", diann_file_name, " is currently loading"))
+    print(paste0("file, with the name ", diann_file_name, " is currently loading"))
     data <- read.delim(diann_file_name, header = T, sep = "\t")
 
 
@@ -117,9 +127,15 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
     dplyr::filter(Quantity.Quality >= Quant_Qual)
 
 
-  # save filtered data
-  write.table(data, "diannoutput_filtered.tsv", sep = "\t", row.names = F, quote = F)
+  # create folder where outputs will be saved
+  if (exists("data", inherits = F) & !dir.exists("txt")) {
 
+    dir.create("txt")
+
+  }
+
+  # save filtered data
+  write.table(data, "txt/diannoutput_filtered.tsv", sep = "\t", row.names = F, quote = F)
 
 
   # subset for necessary columns
@@ -154,6 +170,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
       dplyr::ungroup()
 
   }
+
 
   # from long to wide also import additional columns from the original data
   data_peptide <- data_peptide %>%
@@ -199,6 +216,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # combine
   combined_additional <- protein_description %>%
     dplyr::left_join(second_id)
+
 
   # q values separately for each charge state (experimental library based)
   precursors_data_qvalue <- data %>%
@@ -281,7 +299,7 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # write results
   if (save_supplementary == TRUE) {
 
-    write.table(data_peptide, "peptides.txt", row.names = F, sep = "\t", quote = F)
+    write.table(data_peptide, "txt/peptides.txt", row.names = F, sep = "\t", quote = F)
 
   }
 
@@ -334,9 +352,27 @@ read_diann <- function(Q_Val = 0.01, Global_Q_Val = 0.01,
   # write results
   if (save_supplementary == TRUE) {
 
-    write.table(data_pg, "proteingroups.txt", row.names = F, sep = "\t", quote = F)
+    write.table(data_pg, "txt/proteingroups.txt", row.names = F, sep = "\t", quote = F)
 
   }
+
+
+  # print message what has been saved
+  if (save_supplementary == TRUE) {
+
+    cat("the following files were saved in the txt folder:
+    1 - diann_output_filtered;
+    2 - peptides;
+    3 - proteingroups.")
+
+  }
+
+  if (save_supplementary == FALSE) {
+
+    cat("the following file were saved in the txt folder:
+    diann_output_filtered.")
+
+    }
 
 
   if (for_msempire == T) {
