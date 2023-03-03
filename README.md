@@ -30,17 +30,11 @@ if(!require(devtools)){
 devtools::install_github("bshashikadze/pepquantify")
 ```
 
-if peptide level quantifications is planned, an MS-EmpiRe package needs to be installed to perform normalization & quantification. This is not neccessary if the purpose is to generate peptides and proteins groups files from DIA-NN main output. 
-
 ## Example script
+ 
 
 This is a basic example:
-1. set the working directory (folder which contains proteomics dataset)
-
-*pepquantify read functions expect that the working directory contains proteinGroups.txt and peptides.txt (MaxQuant outputs) in case of DDA data (lfq or TMT), and main output of DIA-NN in case of the DIA analysis. See also ?read_mqdda and ?read_diann*
-
 ### load the libraries
-*The vast majority of pepquantify functions are written using tidyverse package collection, they will be imported automatically*
 ``` r
 library(pepquantify)
 library(msEmpiRe)
@@ -56,10 +50,8 @@ You need to execute this function once only in each session to have it in a glob
 see: https://github.com/zimmerlab/MS-EmpiRe to know more about MS-EmpiRe package (also doi:10.1074/mcp.RA119.001509)  
 note1: this function consists with codes which can be found in -
 https://github.com/zimmerlab/MS-EmpiRe/blob/master/example.R 
-note2: this is only an example code and for more information you should
-refer to the documentation of an MS-EmpiRe package. 
-note3: in msEmpiRe::read.standard I usually use different regex for unlisting.
-This is iportant to remove unique number at the end of the protein ids which is added by pepquantify read functions and is neccessary for MS-EmpiRe read.standard function. 
+note2: in msEmpiRe::read.standard regex used for unlisting is changed:
+this is iportant to remove unique number at the end of the protein ids (after the LAST dot) which is added by pepquantify read functions and is neccessary for MS-EmpiRe read.standard function. This is especially relevant for NCBI refseq ids as they themselvs contain dot and version number. 
 </details>
 
 
