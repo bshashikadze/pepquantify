@@ -80,7 +80,7 @@ msempire_calculation <- function(data, data2 = data_raw, seed=1234, fc_threshold
 <details>
 <summary>Important</summary>
 This function expects that directory contains peptides.txt and proteingroups.txt from MaxQuant txt folder (without modification)
-  
+</details> 
   
 <details>
 <summary>Arguments and default values</summary>
