@@ -30,8 +30,7 @@ if(!require(devtools)){
 devtools::install_github("bshashikadze/pepquantify")
 ```
 
-Additionally (if peptide level quantifications is planned) you will need an MS-EmpiRe package installed to perform normalization & quantification. This is not neccessary if the purpose is to generate peptides and proteins groups files from DIA-NN main output
-See: https://github.com/zimmerlab/MS-EmpiRe 
+if peptide level quantifications is planned, an MS-EmpiRe package needs to be installed to perform normalization & quantification. This is not neccessary if the purpose is to generate peptides and proteins groups files from DIA-NN main output. 
 
 ## Example script
 
