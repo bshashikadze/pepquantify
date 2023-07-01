@@ -13,7 +13,7 @@
 #' @examples read_mqdda(exclude_samples=c("samplename"), lfq = TRUE)
 #'
 #'
-read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
+read_mqdda <- function(lfq = TRUE) {
 
 
   # check if the necessary files exist in the directory
@@ -61,8 +61,7 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
 
      data_peptide <- data_peptide %>%
       dplyr::mutate(unique_id = paste(id, seq(1: nrow(data_peptide)), sep = "."), .keep= "all") %>%
-      dplyr::select(id, unique_id, starts_with("Intensity.")) %>%
-      dplyr::select(-all_of(exclude_samples))
+      dplyr::select(id, unique_id, starts_with("Intensity."))
 
   }
 
@@ -73,8 +72,7 @@ read_mqdda <- function(exclude_samples=c(), lfq = TRUE) {
 
      data_peptide <- data_peptide %>%
       dplyr::mutate(unique_id = paste(id, seq(1: nrow(data_peptide)), sep = "."), .keep="all") %>%
-      dplyr::select(id, unique_id, starts_with("Reporter.intensity.corrected.")) %>%
-      dplyr::select(-all_of(exclude_samples))
+      dplyr::select(id, unique_id, starts_with("Reporter.intensity.corrected."))
 
   # for convention Reporter.intensity.corrected will be replaced by Intensity.
       names(data_peptide)<-gsub("Reporter.intensity.corrected.", "Intensity.", colnames(data_peptide))

@@ -114,7 +114,8 @@ resultstidy <- function(fc_threshold = 1.5, data, data2) {
   # save the results that can be used to plot the volcano plot
   msempire_results_volcano <- msempire_results %>%
     dplyr::select(1:6) %>%
-    dplyr::mutate_all(~dplyr::na_if(., 0))
+    dplyr::mutate_at(c("p_value", "adj_p_value"), ~dplyr::na_if(., 0))
+
 
 
   #replace P values having value of 1 with with the highest value which is not 1 (this is to properly logarithmize)
